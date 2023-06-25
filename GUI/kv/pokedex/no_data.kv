@@ -1,0 +1,42 @@
+#:kivy 2.1.0
+<NoData>:
+    Widget:
+        Label:
+            font_size: 36
+            size: root.width/2, root.height/5
+            size_hint: None, None
+            center_x: root.width / 2
+            top: root.top - 10
+            text: "Нет данных по этой игре"
+        Button:
+            id: collect_data
+            center_y: root.height / 2
+            center_x: root.width / 3
+            font_size: 24
+            size: 200, 75
+            text: "Загрузить данные"
+            on_release: root.collect_data()
+        Button:
+            id: input_data
+            center_y: root.height / 2
+            center_x: root.width / 3*2
+            font_size: 24
+            size: 200, 75
+            text: "Ввести данные\n       вручную"
+            on_release: root.input_data()
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 3
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width / 1.5
+            font_size: 24
+            size: 200, 75
+            text: "Выбор игры"
+            on_release: root.game_selection()

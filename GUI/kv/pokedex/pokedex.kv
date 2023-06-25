@@ -1,0 +1,19 @@
+#:kivy 2.1.0
+<Pokedex>:
+    Widget:
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 3
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width / 1.5
+            font_size: 24
+            size: 200, 75
+            text: "Выбор игры"
+            on_release: root.game_selection()

@@ -1,0 +1,35 @@
+#:kivy 2.1.0
+<GameSelection>:
+    Widget:
+        Label:
+            text: "Выбор игры"
+            center_y: root.height - 75
+            center_x: root.width / 2
+            font_size: 32
+            size: 200, 75
+        ScrollView:
+            top: root.height/10*9
+            size : root.width/6*5, root.height/5*3
+            center_x: root.width/2
+            center_y: root.height/2
+            do_scroll_y: True
+            GridLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                id: grid
+                rows: root.rows
+                cols: 1
+                spacing: 10
+                padding: 10
+                col_force_default: True
+                col_default_width: root.width/5*4
+                row_force_default: True
+                row_default_height: root.height/10
+        Button:
+            id: go_back_button
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Вернуться"
+            on_release: root.go_back()

@@ -1,0 +1,26 @@
+#:kivy 2.1.0
+
+<MainScreen>:
+    Widget:
+        Button:
+            id: login
+            size: 500, 75
+            font_size: 42
+            center_x: root.width / 2
+            top: root.top / 5 * 4
+            text: "Войти"
+        Button:
+            id: register
+            size: 500, 75
+            font_size: 42
+            center_x: root.width / 2
+            top: root.top/9 * 5
+            text: "Зарегистрироваться"
+        Button:
+            id: pokedex
+            size: 500, 75
+            font_size: 42
+            center_x: root.width / 2
+            top: root.top/3
+            text: "Покедекс"
+            on_release: root.pokedex()
