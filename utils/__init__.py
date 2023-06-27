@@ -5,5 +5,8 @@ TYPE_DICT = {"normal": "нормальный", "fighting": "боевой", "flyi
               "fire": "огненный", "water": "водный", "grass": "травяной", "electric": "электрический",
               "psychic": "психический", "ice": "ледяной", "dragon": "драконий", "dark": "тёмный", "fairy": "волшебный"}
 
+GO_CP_MULTIPLIER_40 = 0.792803968
+GO_CP_MULTIPLIER_50 = 0.84529999
+
 games = ['Pokemon HOME', 'Pokemon Go', 'Pokemon Red&Blue', 'Pokemon Yellow', 'Pokemon Gold&Silver',
-         'Pokemon Scarlet&Violet', 'TYPE_DICT']
+         'Pokemon Scarlet&Violet', 'TYPE_DICT', 'GO_CP_MULTIPLIER_40', 'GO_CP_MULTIPLIER_5']

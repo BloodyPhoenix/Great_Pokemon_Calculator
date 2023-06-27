@@ -24,32 +24,31 @@ ChargeMoveDetail = Table(
 )
 
 
-class Move(Base):
+class FastMove(Base):
+    __tablename__ = 'GO_moves_fast'
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     type: Mapped[str] = mapped_column(String(20))
     damage_pve: Mapped[int] = mapped_column(Integer)
     damage_pvp: Mapped[int] = mapped_column(Integer)
-
-
-class FastMove(Move):
-    __tablename__ = 'GO_moves_fast'
     energy_pve: Mapped[int] = mapped_column(Integer)
     speed_pve: Mapped[float] = mapped_column(Float)
     energy_pvp: Mapped[int] = mapped_column(Integer)
     speed_pvp: Mapped[float] = mapped_column(Float)
-    pokemon: Mapped[List[Pokemon]] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
+    pokemon: Mapped[List['Pokemon']] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
 
 
-class ChargeMove(Move):
+class ChargeMove(Base):
     __tablename__ = 'GO_moves_charge'
-    crit_chance: Mapped[int] = mapped_column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(30))
+    type: Mapped[str] = mapped_column(String(20))
+    damage_pve: Mapped[int] = mapped_column(Integer)
+    damage_pvp: Mapped[int] = mapped_column(Integer)
     speed: Mapped[float] = mapped_column(Float)
     charges_pve: Mapped[int] = mapped_column(Integer)
     energy_pvp: Mapped[int] = mapped_column(Integer)
-    effect_pvp: Mapped[Optional[List[str]]] = mapped_column(String)
-    effect_chance: Mapped[Optional[Integer]] = mapped_column(Integer)
-    pokemon: Mapped[List[Pokemon]] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
+    pokemon: Mapped[List['Pokemon']] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
 
 
 class Pokemon(Base):
@@ -61,12 +60,16 @@ class Pokemon(Base):
     type_1: Mapped[str] = mapped_column(String(20))
     type_2: Mapped[Optional[str]] = mapped_column(String(20))
     base_hp: Mapped[int] = mapped_column(Integer)
-    max_hp: Mapped[int] = mapped_column(Integer)
+    max_hp_40: Mapped[int] = mapped_column(Integer)
+    max_hp_50: Mapped[int] = mapped_column(Integer)
     base_attack: Mapped[int] = mapped_column(Integer)
-    max_attack: Mapped[int] = mapped_column(Integer)
+    max_attack_40: Mapped[int] = mapped_column(Integer)
+    max_attack_50: Mapped[int] = mapped_column(Integer)
     base_defence: Mapped[int] = mapped_column(Integer)
-    max_defence: Mapped[int] = mapped_column(Integer)
-    max_cp: Mapped[int] = mapped_column(Integer)
+    max_defence_40: Mapped[int] = mapped_column(Integer)
+    max_defence_50: Mapped[int] = mapped_column(Integer)
+    max_cp_40: Mapped[int] = mapped_column(Integer)
+    max_cp_50: Mapped[int] = mapped_column(Integer)
     fast_moves: Mapped[List[FastMove]] = relationship(secondary=FastMoveDetail, back_populates="pokemon")
     charge_moves: Mapped[List[ChargeMove]] = relationship(secondary=ChargeMoveDetail, back_populates="pokemon")
 
