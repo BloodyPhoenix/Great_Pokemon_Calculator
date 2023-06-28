@@ -6,7 +6,6 @@ from sqlalchemy.engine import create_engine as _create_engine
 
 
 def create_engine():
-    load_dotenv('../../utils/settings/postgres_config.env')
     postgres_url = URL.create(
         "postgresql+psycopg2",
         username=os.getenv("POSTGRES_USER"),

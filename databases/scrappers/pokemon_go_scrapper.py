@@ -5,19 +5,33 @@ from math import sqrt
 
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
-from sqlalchemy import exists
 from sqlalchemy.orm import sessionmaker
+from kivy.uix.screenmanager import Screen
 from utils import GO_CP_MULTIPLIER_40, GO_CP_MULTIPLIER_50
 
 
-def pokemon_go_scrapper():
-    pass
+_POKEDEX_LINKS = ['https://serebii.net/pokemongo/gen1pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen2pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen3pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen4pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen5pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen6pokemon.shtml',
+                  'https://serebii.net/pokemongo/gen7pokemon.shtml',
+                  'https://serebii.net/pokemongo/unknownpokemon.shtml',
+                  'https://serebii.net/pokemongo/gen8pokemon.shtml',
+                  'https://serebii.net/pokemongo/hisuipokemon.shtml',
+                  'https://serebii.net/pokemongo/gen9pokemon.shtml']
 
 
 def get_move_data(move_name: str):
+    '''
+    a func that finds info about pokemon move by it's name
+    :param move_name: a name of a move we need info about
+    :return: full data about that move
+    '''
     from databases.scrappers import open_url
     url = open_url('https://serebii.net/pokemongo/moves.shtml')
-    soup = BeautifulSoup(url.read(), features="html.parser")
+    soup = BeautifulSoup(url.read().decode('cp1252'), features="html.parser")
     moves_table = soup.find("li", {"title": "VCurrent"})
     move = moves_table.find("a", {"name": move_name.lower().replace(' ', '')})
     fast = True
@@ -27,6 +41,8 @@ def get_move_data(move_name: str):
         for m in current_move:
             move = m
         fast = False
+    if move is None:
+        return 'skip'
     move = move.parent
     if fast:
         move = move.parent
@@ -44,13 +60,21 @@ def get_move_data(move_name: str):
     else:
         move_data['damage_pve'] = int(tags[2].text.rstrip())
         move_data['speed'] = float(tags[4].text.split()[0])
-        move_data['energy_pve'] = tags[5].find('img').attrs['alt'].split()[0]
+        try:
+            move_data['energy_pve'] = tags[5].find('img').attrs['alt'].split()[0]
+        except AttributeError:
+            move_data['energy_pve'] = 1
         move_data['damage_pvp'] = int(tags[6].text.rstrip())
         move_data['energy_pvp'] = int(tags[7].text.rstrip())
     return move_data
 
 
 def get_image(pokemon_data: Tag):
+    '''
+    A func that gets link to pokemon image
+    :param pokemon_data: data where are we looking for image
+    :return: a straight link to image
+    '''
     image = pokemon_data.find_all("img", {"src": re.compile("(pokemon)+")})
     pure_image = image[0].attrs["src"]
     pure_image = "https://serebii.net" + pure_image
@@ -58,6 +82,12 @@ def get_image(pokemon_data: Tag):
 
 
 def check_double(line, tags):
+    '''
+    Checks if there is double info about pokemon, which is common in serebii.net tags
+    :param line: a line we are checking
+    :param tags: info we really need
+    :return: modifies tags
+    '''
     if isinstance(line, Tag):
         line = line.getText().strip()
     if len(line) > 0:
@@ -69,6 +99,12 @@ def check_double(line, tags):
 
 
 def check_content(obj, content):
+    '''
+    function that works with serenii.net stuctures to get info out of them. A recursive func
+    :param obj: tag with pokemon info
+    :param content: info about pokemon we already have.
+    :return: Modidies content
+    '''
     if isinstance(obj, NavigableString):
         line = str(obj).strip()
         check_double(line, content)
@@ -82,10 +118,16 @@ def check_content(obj, content):
 
 
 def reformat_data(data: list):
+    '''
+    reformats data from get_pokemon_data func from list to dict
+    :param data: list of pokemon properties
+    :return:
+    '''
     reformatted_data = {'image_link': data[0],
                         'number': data[1], 'species_name': data[2],
                         'type_1': data[3]
                         }
+    print(data)
     if data[4] != 'HP':
         reformatted_data['type_2'] = data[4]
         reformatted_data['HP'] = data[6]
@@ -100,10 +142,17 @@ def reformat_data(data: list):
         reformatted_data['Defense'] = data[9]
         reformatted_data['Max CP'] = data[11]
         reformatted_data['moves'] = data[14:]
+    if reformatted_data['number'] == '#0083':
+        print(reformatted_data)
     return reformatted_data
 
 
-def get_pokemon_data(pokemon_data: Tag):
+def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
+    '''
+    Gets and reformats data for a single pokemon.
+    :param pokemon_data: dict with pokemon properties or a string that indicated that pokemon is not released yet
+    :return:
+    '''
     image = get_image(pokemon_data)
     full_data = pokemon_data.parent.parent
     links = full_data.find_all('a', href=True)
@@ -114,6 +163,7 @@ def get_pokemon_data(pokemon_data: Tag):
     else:
         name = name.text
     name = name.rstrip()
+    proceed_screen.set_pokemon(name)
     content = [image, ]
     types = full_data.find_all("img", {"src": re.compile("(type)+")})
     for child in full_data.children:
@@ -123,10 +173,20 @@ def get_pokemon_data(pokemon_data: Tag):
     for pkmn_type in types:
         content.insert(index, str(pkmn_type).split('/')[-2].split('.')[0])
         index += 1
+    if 'Not Currently Available' in content:
+        return 'not released'
+    for info in content[4: 6]:
+        if type(info) == str and len(info) > 10:
+            content.remove(info)
     return reformat_data(content)
 
 
 def save_data(data: dict):
+    '''
+    Saves pokemon data to Postgres DB
+    :param data: a dictionary of pokemon params
+    :return:
+    '''
     work_dir = os.path.abspath(os.curdir)
     base_dir = work_dir.split('/')
     while base_dir[-1] != 'ВПК':
@@ -151,8 +211,7 @@ def save_data(data: dict):
     engine = create_engine()
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     db = local_session()
-    from databases import GoBase, GoPokemon, FastMove, ChargeMove
-    GoBase.metadata.create_all(engine)
+    from databases import GoPokemon, FastMove, ChargeMove
     fast_moves = []
     charge_moves = []
     for move in data['moves']:
@@ -162,6 +221,9 @@ def save_data(data: dict):
             charge_moves.append(db.query(ChargeMove).filter(ChargeMove.name == move).one())
         else:
             move_data = get_move_data(move)
+            if move_data == 'skip':
+                print('No info on move f{move}')
+                continue
             if 'speed_pve' in move_data:
                 fast_move = FastMove(
                     name=move,
@@ -218,24 +280,30 @@ def save_data(data: dict):
     db.close()
 
 
-def get_full_gen(url):
-    from reconnector import open_url
+def get_full_gen(url: str, proceed_screen: Screen):
+    '''
+    Connects to serebii.net page and gets data from it
+    :param url: serebtt.net url
+    :return: None
+    '''
+    from . import open_url
     url = open_url(url)
-    soup = BeautifulSoup(url.read(), features="html.parser")
+    soup = BeautifulSoup(url.read().decode('cp1252'), features="html.parser")
     table = soup.findAll("table", {"class": "pkmn"})
-    index = 0
     for pokemon_data in table:
-        data = get_pokemon_data(pokemon_data)
+        data = get_pokemon_data(pokemon_data, proceed_screen)
+        if data == 'not released':
+            continue
         save_data(data)
-        index += 1
-        if index == 1:
-            break
 
 
-if __name__ == '__main__':
-    from databases import create_engine
-    engine = create_engine()
-    local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
-    db = local_session()
-    from databases import GoBase, GoPokemon, FastMove, ChargeMove
-    print(db.query(GoPokemon).filter(GoPokemon.species_name=='Bulbasaur').one())
+def pokemon_go_scrapper(proceed_screen: Screen):
+    '''
+    main scrapper func
+    :return: None
+    '''
+    for link in _POKEDEX_LINKS:
+        get_full_gen(link, proceed_screen)
+    from GUI import Pokedex
+    proceed_screen.manager.add_widget(Pokedex(game='Pokemon_GO', name='Pokemon GO pokedex'))
+    proceed_screen.manager.current = 'Pokemon GO pokedex'

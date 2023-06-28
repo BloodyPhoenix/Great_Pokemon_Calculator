@@ -15,7 +15,9 @@ class GameSelection(Screen):
         game = button.text
         data = check_data(game)
         if data:
-            self.manager.add_widget = f'{game} pokedex'
+            from . import Pokedex
+            self.manager.add_widget(Pokedex(game=f'{game}', name=f'{game} pokedex'))
+            self.manager.current = f'{game} pokedex'
         else:
             from . import NoData
             self.manager.add_widget(NoData(game=game, name=f'{game} no data'))

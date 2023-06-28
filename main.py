@@ -4,7 +4,10 @@ from kivy.uix.screenmanager import ScreenManager
 
 from GUI import MainScreen,GameSelection
 from kivy.lang import Builder
+from dotenv import load_dotenv
 
+
+load_dotenv('utils/settings/postgres_config.env')
 
 for path, _, files in walk('./GUI/kv/'):
     for kv in files:

@@ -4,7 +4,7 @@
         Button:
             id: to_main
             center_y: 75
-            center_x: root.width / 3
+            center_x: root.width / 4
             font_size: 24
             size: 200, 75
             text: "Главное меню"
@@ -12,8 +12,16 @@
         Button:
             id: game_selection
             center_y: 75
-            center_x: root.width / 1.5
+            center_x: root.width / 2
             font_size: 24
             size: 200, 75
             text: "Выбор игры"
             on_release: root.game_selection()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Обновить"
+            on_release: root.update()

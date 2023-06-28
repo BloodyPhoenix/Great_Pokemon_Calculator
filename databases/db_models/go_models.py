@@ -37,6 +37,12 @@ class FastMove(Base):
     speed_pvp: Mapped[float] = mapped_column(Float)
     pokemon: Mapped[List['Pokemon']] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
 
+    def __str__(self):
+        return f"""
+move name: {self.name}
+type: {self.type}
+"""
+
 
 class ChargeMove(Base):
     __tablename__ = 'GO_moves_charge'
@@ -50,13 +56,19 @@ class ChargeMove(Base):
     energy_pvp: Mapped[int] = mapped_column(Integer)
     pokemon: Mapped[List['Pokemon']] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
 
+    def __str__(self):
+        return f"""
+move name: {self.name}
+type: {self.type}
+"""
+
 
 class Pokemon(Base):
     __tablename__ = 'GO_pokemon'
     id: Mapped[int] = mapped_column(primary_key=True)
     picture_link: Mapped[str] = mapped_column(String(150))
     pokedex_number: Mapped[str] = mapped_column(String(5))
-    species_name: Mapped[str] = mapped_column(String(30))
+    species_name: Mapped[str] = mapped_column(String(50))
     type_1: Mapped[str] = mapped_column(String(20))
     type_2: Mapped[Optional[str]] = mapped_column(String(20))
     base_hp: Mapped[int] = mapped_column(Integer)
@@ -72,6 +84,14 @@ class Pokemon(Base):
     max_cp_50: Mapped[int] = mapped_column(Integer)
     fast_moves: Mapped[List[FastMove]] = relationship(secondary=FastMoveDetail, back_populates="pokemon")
     charge_moves: Mapped[List[ChargeMove]] = relationship(secondary=ChargeMoveDetail, back_populates="pokemon")
+
+    def __str__(self):
+        return f'''
+pokedex_number: {self.pokedex_number}
+species name: {self.species_name}
+type 1: {self.type_1}
+type 2: {self.type_2}
+image link: {self.picture_link}'''
 
 
 
