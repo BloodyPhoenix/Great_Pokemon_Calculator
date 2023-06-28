@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, InstrumentedAttribute
 from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey
 
 
@@ -11,7 +11,7 @@ class Base(DeclarativeBase):
 FastMoveDetail = Table(
     'FastMoveDetail',
     Base.metadata,
-    Column('pokemon_id', ForeignKey('GO_pokemon.id'), primary_key=True),
+    Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_fast.id'), primary_key=True)
 )
 
@@ -19,7 +19,7 @@ FastMoveDetail = Table(
 ChargeMoveDetail = Table(
     'ChargeMoveDetail',
     Base.metadata,
-    Column('pokemon_id', ForeignKey('GO_pokemon.id'), primary_key=True),
+    Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_charge.id'), primary_key=True)
 )
 
@@ -65,10 +65,10 @@ type: {self.type}
 
 class Pokemon(Base):
     __tablename__ = 'GO_pokemon'
-    id: Mapped[int] = mapped_column(primary_key=True)
     picture_link: Mapped[str] = mapped_column(String(150))
     pokedex_number: Mapped[str] = mapped_column(String(5))
-    species_name: Mapped[str] = mapped_column(String(50))
+    species_name: Mapped[str] = mapped_column(String(30))
+    form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
     type_1: Mapped[str] = mapped_column(String(20))
     type_2: Mapped[Optional[str]] = mapped_column(String(20))
     base_hp: Mapped[int] = mapped_column(Integer)
@@ -84,6 +84,21 @@ class Pokemon(Base):
     max_cp_50: Mapped[int] = mapped_column(Integer)
     fast_moves: Mapped[List[FastMove]] = relationship(secondary=FastMoveDetail, back_populates="pokemon")
     charge_moves: Mapped[List[ChargeMove]] = relationship(secondary=ChargeMoveDetail, back_populates="pokemon")
+
+    def upsert(self, session):
+        if session.query(Pokemon).filter(Pokemon.form_name == self.form_name).first() is None:
+            session.add(self)
+        else:
+            self.update(session)
+
+    def update(self, session):
+        current_entity = session.query(Pokemon).filter(Pokemon.form_name == self.form_name).first()
+        values = dict()
+        for item in self.__dict__.items():
+            values[item[0]] = item[1]
+        for key, value in values.items():
+            if hasattr(current_entity, key):
+                setattr(current_entity, key, value)
 
     def __str__(self):
         return f'''

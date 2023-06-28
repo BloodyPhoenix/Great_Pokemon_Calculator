@@ -125,23 +125,24 @@ def reformat_data(data: list):
     '''
     reformatted_data = {'image_link': data[0],
                         'number': data[1], 'species_name': data[2],
-                        'type_1': data[3]
+                        'form_name': data[3],
+                        'type_1': data[4]
                         }
     print(data)
-    if data[4] != 'HP':
-        reformatted_data['type_2'] = data[4]
+    if data[5] != 'HP':
+        reformatted_data['type_2'] = data[5]
+        reformatted_data['HP'] = data[7]
+        reformatted_data['Attack'] = data[9]
+        reformatted_data['Defense'] = data[11]
+        reformatted_data['Max CP'] = data[13]
+        reformatted_data['moves'] = data[16:]
+    else:
+        reformatted_data['type_2'] = None
         reformatted_data['HP'] = data[6]
         reformatted_data['Attack'] = data[8]
         reformatted_data['Defense'] = data[10]
         reformatted_data['Max CP'] = data[12]
         reformatted_data['moves'] = data[15:]
-    else:
-        reformatted_data['type_2'] = None
-        reformatted_data['HP'] = data[5]
-        reformatted_data['Attack'] = data[7]
-        reformatted_data['Defense'] = data[9]
-        reformatted_data['Max CP'] = data[11]
-        reformatted_data['moves'] = data[14:]
     if reformatted_data['number'] == '#0083':
         print(reformatted_data)
     return reformatted_data
@@ -159,10 +160,11 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
 
     name = links[1]
     if name.next_sibling:
-        name = name.text + name.next_sibling.text
+        form_name = name.text + name.next_sibling.text
     else:
-        name = name.text
-    name = name.rstrip()
+        form_name = name.text
+    name = name.text.rstrip()
+    form_name = form_name.rstrip()
     proceed_screen.set_pokemon(name)
     content = [image, ]
     types = full_data.find_all("img", {"src": re.compile("(type)+")})
@@ -178,6 +180,7 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
     for info in content[4: 6]:
         if type(info) == str and len(info) > 10:
             content.remove(info)
+    content.insert(3, form_name)
     return reformat_data(content)
 
 
@@ -255,6 +258,7 @@ def save_data(data: dict):
         picture_link=image_path,
         pokedex_number=data['number'],
         species_name=data['species_name'],
+        form_name = data['form_name'],
         type_1=data['type_1'],
         type_2=data['type_2'],
         base_hp=data['HP'],
@@ -275,8 +279,8 @@ def save_data(data: dict):
         pokemon.fast_moves.append(move)
     for move in charge_moves:
         pokemon.charge_moves.append(move)
-    db.add(pokemon)
-    db.commit()
+    pokemon.upsert(db)
+    session.commit()
     db.close()
 
 

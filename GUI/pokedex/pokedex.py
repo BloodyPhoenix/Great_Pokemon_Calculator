@@ -11,14 +11,15 @@ class Pokedex(Screen):
         self.game = game
 
     def update(self):
-        try:
-            collect_data(self.game, self)
-        except KeyError:
-            popup = Popup(title="Не найдена функция",
-                          content=Label(text='Не найдена функция сбора данных для этой игры'),
-                          size_hint=(None, None), size=(400, 400)
-                          )
-            popup.open()
+        collect_data(self.game, self)
+        # try:
+        #     collect_data(self.game, self)
+        # except KeyError:
+        #     popup = Popup(title="Не найдена функция",
+        #                   content=Label(text='Не найдена функция сбора данных для этой игры'),
+        #                   size_hint=(None, None), size=(400, 400)
+        #                   )
+        #     popup.open()
 
 
     def to_main(self):

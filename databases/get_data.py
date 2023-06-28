@@ -22,3 +22,10 @@ def collect_data(game, prev_screen):
     prev_screen.manager.add_widget(proceed_screen)
     prev_screen.manager.current = 'proceed screen'
     proceed_screen.start_collection(scrapper)
+
+
+def get_data_from_database(game):
+    from databases import data_getters
+    getter = data_getters[game]
+    return getter()
+
