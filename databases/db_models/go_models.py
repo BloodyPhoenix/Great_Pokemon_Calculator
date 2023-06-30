@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, InstrumentedAttribute
-from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey
+from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, Boolean
 
 
 class Base(DeclarativeBase):
@@ -71,6 +71,9 @@ class Pokemon(Base):
     form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
     type_1: Mapped[str] = mapped_column(String(20))
     type_2: Mapped[Optional[str]] = mapped_column(String(20))
+    legendary: Mapped[bool] = mapped_column(Boolean, default=False)
+    mythic: Mapped[bool] = mapped_column(Boolean, default=False)
+    mega: Mapped[bool] = mapped_column(Boolean, default=False)
     base_hp: Mapped[int] = mapped_column(Integer)
     max_hp_40: Mapped[int] = mapped_column(Integer)
     max_hp_50: Mapped[int] = mapped_column(Integer)

@@ -280,7 +280,7 @@ def save_data(data: dict):
     for move in charge_moves:
         pokemon.charge_moves.append(move)
     pokemon.upsert(db)
-    session.commit()
+    db.commit()
     db.close()
 
 
