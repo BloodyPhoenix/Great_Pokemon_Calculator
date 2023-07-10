@@ -1,7 +1,10 @@
+from math import sqrt
 from typing import Optional, List
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, InstrumentedAttribute
 from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, Boolean
+
+
 
 
 class Base(DeclarativeBase):
@@ -22,6 +25,14 @@ ChargeMoveDetail = Table(
     Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_charge.id'), primary_key=True)
 )
+
+
+# MyPokemonChargeMoves = Table(
+#     'MyPokemonChargeMoves',
+#     Base.metadata,
+#     Column('pokemon_form_name', ForeignKey('GO_my_pokemon.name'), primary_key=True),
+#     Column('move_id', ForeignKey('GO_moves_charge.id'), primary_key=True)
+# )
 
 
 class FastMove(Base):
@@ -88,20 +99,78 @@ class Pokemon(Base):
     fast_moves: Mapped[List[FastMove]] = relationship(secondary=FastMoveDetail, back_populates="pokemon")
     charge_moves: Mapped[List[ChargeMove]] = relationship(secondary=ChargeMoveDetail, back_populates="pokemon")
 
-    def upsert(self, session):
-        if session.query(Pokemon).filter(Pokemon.form_name == self.form_name).first() is None:
-            session.add(self)
+    @classmethod
+    def upsert(cls, data, session, image_path, fast_moves, charge_moves):
+        from utils import GO_CP_MULTIPLIER_40, GO_CP_MULTIPLIER_50
+        current_pokemon = session.query(cls).filter(cls.form_name == data['form_name']).first()
+        if current_pokemon is None:
+            pokemon = cls(
+                picture_link=image_path,
+                pokedex_number=data['number'],
+                species_name=data['species_name'],
+                form_name=data['form_name'],
+                type_1=data['type_1'],
+                type_2=data['type_2'],
+                base_hp=data['HP'],
+                max_hp_40=(data['HP'] + 15) * GO_CP_MULTIPLIER_40,
+                max_hp_50=(data['HP'] + 15) * GO_CP_MULTIPLIER_50,
+                base_attack=data['Attack'],
+                max_attack_40=(data['Attack'] + 15) * GO_CP_MULTIPLIER_40,
+                max_attack_50=(data['Attack'] + 15) * GO_CP_MULTIPLIER_50,
+                base_defence=data['Defense'],
+                max_defence_40=(data['Defense'] + 15) * GO_CP_MULTIPLIER_40,
+                max_defence_50=(data['Defense'] + 15) * GO_CP_MULTIPLIER_50,
+                max_cp_40=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
+                        GO_CP_MULTIPLIER_40 ** 2) / 10,
+                max_cp_50=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
+                        GO_CP_MULTIPLIER_50 ** 2) / 10,
+            )
+            for move in fast_moves:
+                pokemon.fast_moves.append(move)
+            for move in charge_moves:
+                pokemon.charge_moves.append(move)
+            session.add(pokemon)
+            session.commit()
         else:
-            self.update(session)
+            current_pokemon.picture_link = image_path
+            current_pokemon.pokedex_number = data['number'],
+            current_pokemon.species_name = data['species_name'],
+            current_pokemon.form_name = data['form_name'],
+            current_pokemon.type_1 = data['type_1'],
+            current_pokemon.type_2 = data['type_2'],
+            current_pokemon.base_hp = data['HP'],
+            current_pokemon.max_hp_40 = (data['HP'] + 15) * GO_CP_MULTIPLIER_40,
+            current_pokemon.max_hp_50 = (data['HP'] + 15) * GO_CP_MULTIPLIER_50,
+            current_pokemon.base_attack = data['Attack'],
+            current_pokemon.max_attack_40 = (data['Attack'] + 15) * GO_CP_MULTIPLIER_40,
+            current_pokemon.max_attack_50 = (data['Attack'] + 15) * GO_CP_MULTIPLIER_50,
+            current_pokemon.base_defence = data['Defense'],
+            current_pokemon.max_defence_40 = (data['Defense'] + 15) * GO_CP_MULTIPLIER_40,
+            current_pokemon.max_defence_50 = (data['Defense'] + 15) * GO_CP_MULTIPLIER_50,
+            current_pokemon.max_cp_40 = (data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
+                    GO_CP_MULTIPLIER_40 ** 2) / 10,
+            current_pokemon.max_cp_50 = (data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
+                    GO_CP_MULTIPLIER_50 ** 2) / 10
+            session.commit()
+            for move in fast_moves:
+                if move not in current_pokemon.fast_moves:
+                    current_pokemon.fast_moves.append(move)
+                    session.commit()
+            for move in current_pokemon.fast_moves:
+                if move not in fast_moves:
+                    current_pokemon.fast_moves.remove(move)
+                    session.add(move)
+                    session.commit()
+            for move in charge_moves:
+                if move not in current_pokemon.charge_moves:
+                    current_pokemon.charge_moves.append(move)
+                    session.commit()
+            for move in current_pokemon.charge_moves:
+                if move not in fast_moves:
+                    current_pokemon.charge_moves.remove(move)
+                    session.add(move)
+                    session.commit()
 
-    def update(self, session):
-        current_entity = session.query(Pokemon).filter(Pokemon.form_name == self.form_name).first()
-        values = dict()
-        for item in self.__dict__.items():
-            values[item[0]] = item[1]
-        for key, value in values.items():
-            if hasattr(current_entity, key):
-                setattr(current_entity, key, value)
 
     def __str__(self):
         return f'''
@@ -110,6 +179,44 @@ species name: {self.species_name}
 type 1: {self.type_1}
 type 2: {self.type_2}
 image link: {self.picture_link}'''
+
+
+# class MyPokemon(Base):
+#     __tablename__ = 'GO_my_pokemon'
+#     picture_link: Mapped[str] = mapped_column(String(150))
+#     pokedex_number: Mapped[str] = mapped_column(String(5))
+#     species_name: Mapped[str] = mapped_column(String(30))
+#     form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
+#     name: Mapped[str] = mapped_column(String(50))
+#     type_1: Mapped[str] = mapped_column(String(20))
+#     type_2: Mapped[Optional[str]] = mapped_column(String(20))
+#     legendary: Mapped[bool] = mapped_column(Boolean, default=False)
+#     mythic: Mapped[bool] = mapped_column(Boolean, default=False)
+#     mega: Mapped[bool] = mapped_column(Boolean, default=False)
+#     iv_hp: Mapped[int] = mapped_column(Integer)
+#     iv_attack: Mapped[int] = mapped_column(Integer)
+#     iv_defence: Mapped[int] = mapped_column(Integer)
+#     base_hp: Mapped[int] = mapped_column(Integer)
+#     max_hp_40: Mapped[int] = mapped_column(Integer)
+#     max_hp_50: Mapped[int] = mapped_column(Integer)
+#     base_attack: Mapped[int] = mapped_column(Integer)
+#     max_attack_40: Mapped[int] = mapped_column(Integer)
+#     max_attack_50: Mapped[int] = mapped_column(Integer)
+#     base_defence: Mapped[int] = mapped_column(Integer)
+#     max_defence_40: Mapped[int] = mapped_column(Integer)
+#     max_defence_50: Mapped[int] = mapped_column(Integer)
+#     max_cp_40: Mapped[int] = mapped_column(Integer)
+#     max_cp_50: Mapped[int] = mapped_column(Integer)
+#     fast_move_name: Mapped[int] = mapped_column(ForeignKey('GO_moves_fast.id'))
+#     fast_move: Mapped[FastMove] = relationship(back_populates="my_pokemon")
+
+    def __str__(self):
+        return f'''
+    pokedex_number: {self.pokedex_number}
+    species name: {self.species_name}
+    type 1: {self.type_1}
+    type 2: {self.type_2}
+    image link: {self.picture_link}'''
 
 
 

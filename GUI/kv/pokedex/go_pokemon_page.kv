@@ -1,0 +1,152 @@
+<GoPokemonPage>:
+    pokemon_image: ''
+    pokemon_number: ''
+    pokemon_species: ''
+    pokemon_form: ''
+    pokemon_type_1: ''
+    pokemon_type_2: ''
+    base_hp: ''
+    base_attack: ''
+    base_defence: ''
+    hp_lvl_40: ''
+    attack_lvl_40: ''
+    defence_lvl_40: ''
+    cp_lvl_40: ''
+    hp_lvl_50: ''
+    attack_lvl_50: ''
+    defence_lvl_50: ''
+    cp_lvl_50: ''
+    Widget:
+        ScrollView:
+            top: root.height/11*10
+            size : root.width/10*9, root.height/8*6
+            center_x: root.width/2
+            center_y: root.height/2
+            do_scroll_y: True
+            GridLayout:
+                size_hint_y: None
+                cols: 1
+                height: sum([c.height for c in self.children])
+                GridLayout:
+                    rows: 1
+                    cols: 2
+                    Image:
+                        source: root.pokemon_image
+                    GridLayout:
+                        cols: 1
+                        rows: 5
+                        Label:
+                            size: self.texture_size
+                            text: root.pokemon_number
+                            halign: 'left'
+                        Label:
+                            size: self.texture_size
+                            text: root.pokemon_species
+                            halign: 'left'
+                        Label:
+                            size: self.texture_size
+                            text: root.pokemon_form
+                            halign: 'left'
+                        Label:
+                            size: self.texture_size
+                            text: root.pokemon_type_1
+                            halign: 'left'
+                        Label:
+                            size: self.texture_size
+                            text: root.pokemon_type_2
+                            halign: 'left'
+                Label:
+                    size: self.texture_size
+                    text: "Базовые параметры"
+                GridLayout:
+                    rows: 3
+                    cols: 2
+                    Label:
+                        size: self.texture_size
+                        text: 'HP'
+                    Label:
+                        size: self.texture_size
+                        text: root.base_hp
+                    Label:
+                        size: self.texture_size
+                        text: 'Атака'
+                    Label:
+                        size: self.texture_size
+                        text: root.base_attack
+                    Label:
+                        size: self.texture_size
+                        text: 'Защита'
+                    Label:
+                        size: self.texture_size
+                        text: root.base_defence
+                Label:
+                    text: "Максимальные параметры уровень 40"
+                GridLayout:
+                    rows: 4
+                    cols: 2
+                    Label:
+                        text: 'HP'
+                    Label:
+                        text: root.hp_lvl_40
+                    Label:
+                        text: 'Атака'
+                    Label:
+                        text: root.attack_lvl_40
+                    Label:
+                        text: 'Защита'
+                    Label:
+                        text: root.defence_lvl_40
+                    Label:
+                        text: 'CP'
+                    Label:
+                        text: root.cp_lvl_40
+                Label:
+                    text: "Максимальные параметры уровень 50"
+                GridLayout:
+                    rows: 4
+                    cols: 2
+                    Label:
+                        text: 'HP'
+                    Label:
+                        text: root.hp_lvl_50
+                    Label:
+                        text: 'Атака'
+                    Label:
+                        text: root.attack_lvl_50
+                    Label:
+                        text: 'Защита'
+                    Label:
+                        text: root.defence_lvl_50
+                    Label:
+                        text: 'CP'
+                    Label:
+                        text: root.cp_lvl_50
+                GridLayout:
+                    size_hint_y: None
+                    cols: 1
+                    row_default_height: 100
+                    row_force_default: True
+        Button:
+            id: pokedex
+            center_y: 75
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 75
+            text: "Покедекс"
+            on_release: root.pokedex()
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Выбор игры"
+            on_release: root.game_selection()

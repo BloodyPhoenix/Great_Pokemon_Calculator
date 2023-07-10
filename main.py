@@ -27,9 +27,6 @@ class GPCApp(App):
 
 
 if __name__ == '__main__':
-    # GPCApp().run()
-    from utils import go_strongest_type
-    for pokemon in go_strongest_type(20, 'fairy', exclude_no_moves=True):
-        print(pokemon, end='\n')
-        print(pokemon.max_cp_40)
+    GPCApp().run()
+
 

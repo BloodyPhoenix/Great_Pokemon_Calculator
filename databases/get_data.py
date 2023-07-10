@@ -1,5 +1,3 @@
-import time
-
 from sqlalchemy.orm import sessionmaker
 
 
@@ -28,4 +26,10 @@ def get_data_from_database(game):
     from databases import data_getters
     getter = data_getters[game]
     return getter()
+
+
+def get_single_pokemon_data(game, pokemon):
+    from databases import pokemon_data_getters
+    getter = pokemon_data_getters[game]
+    return getter(pokemon)
 

@@ -128,7 +128,6 @@ def reformat_data(data: list):
                         'form_name': data[3],
                         'type_1': data[4]
                         }
-    print(data)
     if data[5] != 'HP':
         reformatted_data['type_2'] = data[5]
         reformatted_data['HP'] = data[7]
@@ -143,8 +142,6 @@ def reformat_data(data: list):
         reformatted_data['Defense'] = data[10]
         reformatted_data['Max CP'] = data[12]
         reformatted_data['moves'] = data[15:]
-    if reformatted_data['number'] == '#0083':
-        print(reformatted_data)
     return reformatted_data
 
 
@@ -205,7 +202,7 @@ def save_data(data: dict):
     image_path = None
     res = requests.get(data['image_link'], stream=True)
     if res.status_code == 200:
-        name = data['species_name'] + '.png'
+        name = str(data['form_name']).lower().replace(' ', '_') + '.png'
         with open(name, 'wb') as f:
             shutil.copyfileobj(res.raw, f)
             image_path = pictures_dir + name
@@ -225,7 +222,7 @@ def save_data(data: dict):
         else:
             move_data = get_move_data(move)
             if move_data == 'skip':
-                print('No info on move f{move}')
+                print(f'No info on move {move}')
                 continue
             if 'speed_pve' in move_data:
                 fast_move = FastMove(
@@ -254,33 +251,7 @@ def save_data(data: dict):
                 db.add(charge_move)
                 db.flush()
                 charge_moves.append(charge_move)
-    pokemon = GoPokemon(
-        picture_link=image_path,
-        pokedex_number=data['number'],
-        species_name=data['species_name'],
-        form_name = data['form_name'],
-        type_1=data['type_1'],
-        type_2=data['type_2'],
-        base_hp=data['HP'],
-        max_hp_40=(data['HP'] + 15) * GO_CP_MULTIPLIER_40,
-        max_hp_50=(data['HP'] + 15) * GO_CP_MULTIPLIER_50,
-        base_attack=data['Attack'],
-        max_attack_40=(data['Attack'] + 15) * GO_CP_MULTIPLIER_40,
-        max_attack_50=(data['Attack'] + 15) * GO_CP_MULTIPLIER_50,
-        base_defence=data['Defense'],
-        max_defence_40=(data['Defense'] + 15) * GO_CP_MULTIPLIER_40,
-        max_defence_50=(data['Defense'] + 15) * GO_CP_MULTIPLIER_50,
-        max_cp_40=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                GO_CP_MULTIPLIER_40 ** 2) / 10,
-        max_cp_50=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                GO_CP_MULTIPLIER_50 ** 2) / 10,
-    )
-    for move in fast_moves:
-        pokemon.fast_moves.append(move)
-    for move in charge_moves:
-        pokemon.charge_moves.append(move)
-    pokemon.upsert(db)
-    db.commit()
+    GoPokemon.upsert(data, db, image_path, fast_moves, charge_moves)
     db.close()
 
 
