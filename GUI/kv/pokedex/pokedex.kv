@@ -2,6 +2,13 @@
 <Pokedex>:
     Widget:
         Button:
+            center_y: root.height - root.height * 0.05
+            center_x: root.width * 0.85
+            font_size: 24
+            size: 200, 50
+            text: "Фильтры"
+            on_release: root.filters.open(self)
+        Button:
             id: to_main
             center_y: 75
             center_x: root.width / 4
@@ -53,7 +60,7 @@
     rv: rv_id
     cols:  1
     rows: 2
-    padding: 0, 0, 0, root.height * 0.2
+    padding: 0, root.height * 0.1, 0, root.height * 0.2
     GridLayout: # col titles
         cols: 5
         rows: 1
@@ -83,3 +90,5 @@
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
+
+

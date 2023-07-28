@@ -1,0 +1,42 @@
+<TypeFilter>:
+    text: "Выберите тип"
+    values: root.values
+
+
+<GoFilters>:
+    GridLayout:
+        size_hint_y: None
+        rows: 2
+        cols: 2
+        Label:
+            size_hint_y: None
+            height: 44
+            text: "Тип 1"
+        TypeFilter:
+            id: type_1
+            size_hint_y: None
+            height: 44
+        Label:
+            size_hint_y: None
+            height: 44
+            text: "Тип 2"
+        TypeFilter:
+            id: type_2
+            size_hint_y: None
+            height: 44
+    Button:
+        text: "По CP"
+        size_hint_y: None
+        height: 44
+    Button:
+        text: "Легендарные/мифические"
+        size_hint_y: None
+        height: 44
+    Button:
+        id: apply
+        text: "Применить"
+        size_hint_y: None
+        height: 44
+        on_release: root.apply()
+
+

@@ -18,7 +18,7 @@ def collect_data(game, prev_screen):
     scrapper = scrappers_dict[game]
     proceed_screen = DataCollectorScreen(game=prev_screen.game, name='proceed screen')
     prev_screen.manager.add_widget(proceed_screen)
-    prev_screen.manager.current = 'proceed screen'
+    prev_screen.managerswitch_to('proceed screen')
     proceed_screen.start_collection(scrapper)
 
 

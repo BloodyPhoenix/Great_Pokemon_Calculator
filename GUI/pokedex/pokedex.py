@@ -1,6 +1,9 @@
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.uix.behaviors import ButtonBehavior, FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.checkbox import CheckBox
+from kivy.uix.dropdown import DropDown
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -11,8 +14,7 @@ from kivy.uix.screenmanager import Screen
 from databases import collect_data, get_data_from_database, get_single_pokemon_data
 
 
-
-class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,RecycleBoxLayout):
+class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     pass
 
 
@@ -49,7 +51,7 @@ class PokedexGrid(GridLayout):
         self.game = game
         global data
         data = get_data_from_database(game)
-        self.rv.scroll_type=['bars', 'content']
+        self.rv.scroll_type = ['bars', 'content']
         self.rv.data = [{
             'image': pokemon.picture_link,
             'pokedex_number': pokemon.pokedex_number,
@@ -57,7 +59,7 @@ class PokedexGrid(GridLayout):
             'type_1': pokemon.type_1,
             'type_2': self.get_type_2(pokemon),
             'root_widget': self
-                      } for pokemon in data]
+        } for pokemon in data]
 
     @staticmethod
     def get_type_2(pokemon):
@@ -65,9 +67,19 @@ class PokedexGrid(GridLayout):
             return pokemon.type_2
         return ''
 
+    def update_data(self, data):
+        self.rv.data = [{
+            'image': pokemon.picture_link,
+            'pokedex_number': pokemon.pokedex_number,
+            'form_name': pokemon.form_name,
+            'type_1': pokemon.type_1,
+            'type_2': self.get_type_2(pokemon),
+            'root_widget': self
+        } for pokemon in data]
+
     def open_pokemon_page(self, form):
         from . import pokemon_pages
-        page_name = self.game+ " "+form
+        page_name = self.game + " " + form
         page = pokemon_pages[self.game]
         page = page(form, name=page_name)
         self.parent.manager.add_widget(page)
@@ -78,11 +90,13 @@ class Pokedex(Screen):
 
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
+        from .filters import filters
         self.game = game
-        self.add_widget(PokedexGrid(game))
+        self.filters = filters[game]()
+        self.grid = PokedexGrid(game)
+        self.add_widget(self.grid)
 
     def update(self):
-        collect_data(self.game, self)
         try:
             collect_data(self.game, self)
         except KeyError:
@@ -134,8 +148,3 @@ class NoData(Screen):
 
     def input_data(self):
         pass
-
-
-
-
-
