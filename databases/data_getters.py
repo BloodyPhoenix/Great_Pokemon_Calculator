@@ -7,7 +7,7 @@ def pokemon_go_data_getter():
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     db = local_session()
     result = db.query(GoPokemon.picture_link, GoPokemon.pokedex_number, GoPokemon.form_name, GoPokemon.type_1,
-             GoPokemon.type_2).order_by(GoPokemon.pokedex_number.asc())
+             GoPokemon.type_2, GoPokemon.max_cp_40, GoPokemon.max_cp_50).order_by(GoPokemon.pokedex_number.asc())
     return result
 
 

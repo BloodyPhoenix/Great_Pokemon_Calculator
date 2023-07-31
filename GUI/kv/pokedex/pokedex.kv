@@ -5,7 +5,7 @@
             center_y: root.height - root.height * 0.05
             center_x: root.width * 0.85
             font_size: 24
-            size: 200, 50
+            size: 500, 50
             text: "Фильтры"
             on_release: root.filters.open(self)
         Button:
@@ -41,6 +41,8 @@
     form_name: ''
     type_1: ''
     type_2: ''
+    cp_40: ''
+    cp_50: ''
     orientation: 'horizontal'
     Image:
         source: root.image
@@ -53,6 +55,10 @@
         text: root.type_1
     Label:
         text: root.type_2
+    Label:
+        text: root.cp_40
+    Label:
+        text: root.cp_50
 
 
 
@@ -62,7 +68,7 @@
     rows: 2
     padding: 0, root.height * 0.1, 0, root.height * 0.2
     GridLayout: # col titles
-        cols: 5
+        cols: 7
         rows: 1
         size_hint_y: 0.1
         Label:
@@ -75,6 +81,10 @@
             text: 'Type 1'
         Label
             text: 'Type 2'
+        Label:
+            text: 'Max CP lvl 40'
+        Label:
+            text: 'Max CP lvl 50'
     GridLayout: # data
         cols: 1
         rows: 1

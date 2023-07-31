@@ -1,3 +1,3 @@
-from .go_filters import strongest_type
+from .go_filters import get_pokemon
 
-__all__ = ['strongest_type']
+__all__ = ['get_pokemon']

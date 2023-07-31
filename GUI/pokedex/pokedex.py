@@ -58,8 +58,15 @@ class PokedexGrid(GridLayout):
             'form_name': pokemon.form_name,
             'type_1': pokemon.type_1,
             'type_2': self.get_type_2(pokemon),
+            'cp_40': self.round_stats(pokemon.max_cp_40),
+            'cp_50': self.round_stats(pokemon.max_cp_50),
             'root_widget': self
         } for pokemon in data]
+
+    @staticmethod
+    def round_stats(stat):
+        return str(int(stat + (0.5 if stat > 0 else -0.5)))
+
 
     @staticmethod
     def get_type_2(pokemon):
@@ -74,6 +81,8 @@ class PokedexGrid(GridLayout):
             'form_name': pokemon.form_name,
             'type_1': pokemon.type_1,
             'type_2': self.get_type_2(pokemon),
+            'cp_40': self.round_stats(pokemon.max_cp_40),
+            'cp_50': self.round_stats(pokemon.max_cp_50),
             'root_widget': self
         } for pokemon in data]
 

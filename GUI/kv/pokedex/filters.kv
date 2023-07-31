@@ -3,35 +3,116 @@
     values: root.values
 
 
+<TypeExcluder>:
+    size_hint_y: None
+    cols: 2
+    rows: 2
+
+
+
 <GoFilters>:
+    canvas.before:
+        Color:
+            rgba: 0.25, 0.25, 0.25, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
     GridLayout:
         size_hint_y: None
-        rows: 2
+        cols: 2
+        rows: 1
+        GridLayout:
+            size_hint_y: None
+            rows: 1
+            cols: 2
+            GridLayout:
+                size_hint_y: None
+                rows: 2
+                cols: 2
+                Label:
+                    size_hint_y: None
+                    height: 44
+                    text: "Тип 1"
+                TypeFilter:
+                    id: type_1
+                    size_hint_y: None
+                    height: 44
+                Label:
+                    size_hint_y: None
+                    height: 44
+                    text: "Тип 2"
+                TypeFilter:
+                    id: type_2
+                    size_hint_y: None
+                    height: 44
+            TypeExcluder:
+                id: excluder
+                size_hint_y: None
+    GridLayout:
+        size_hint_y: None
+        rows: 1
         cols: 2
         Label:
             size_hint_y: None
-            height: 44
-            text: "Тип 1"
-        TypeFilter:
-            id: type_1
+            height: 32
+            text: "CP"
+        Spinner:
             size_hint_y: None
-            height: 44
+            height: 32
+            text: "Максимум"
+            values: 'Без ограничений', '2500', '1500'
+    Label:
+        size_hint_y: None
+        height: 32
+        text: "Параметры сортировки"
+    GridLayout:
+        size_hint_y: None
+        rows: 1
+        cols: 2
+        Spinner:
+            id: sorting
+            size_hint_y: None
+            height: 32
+            text: "По номеру"
+            values: "По номеру", "По названию", "По СР"
+        Spinner:
+            id: asc_or_desc
+            size_hint_y: None
+            height: 32
+            text: "По убыванию"
+            values: 'По убыванию', "По возрастанию"
+    Label:
+        text: "Дополнительные опции"
+        size_hint_y: None
+        height: 44
+    GridLayout:
+        size_hint_y: None
+        cols: 2
+        rows: 4
         Label:
             size_hint_y: None
-            height: 44
-            text: "Тип 2"
-        TypeFilter:
-            id: type_2
+            height: 24
+            text: "Исключить мифических"
+        CheckBox:
+            id: no_mythics
+        Label:
             size_hint_y: None
-            height: 44
-    Button:
-        text: "По CP"
-        size_hint_y: None
-        height: 44
-    Button:
-        text: "Легендарные/мифические"
-        size_hint_y: None
-        height: 44
+            height: 24
+            text: "Исключить легендарных"
+        CheckBox:
+            id: no_legends
+        Label:
+            size_hint_y: None
+            height: 24
+            text: "Исключить меги"
+        CheckBox:
+            id: no_megas
+        Label:
+            size_hint_y: None
+            height: 24
+            text: "Исключить без СТАБ-ов"
+        CheckBox:
+            id: no_stab
     Button:
         id: apply
         text: "Применить"
