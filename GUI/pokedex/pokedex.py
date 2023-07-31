@@ -46,11 +46,14 @@ class RowLayout(BoxLayout, RecycleDataViewBehavior):
 
 class PokedexGrid(GridLayout):
 
-    def __init__(self, game, **kwargs):
+    def __init__(self, game, incoming_data, **kwargs):
         super().__init__(**kwargs)
         self.game = game
         global data
-        data = get_data_from_database(game)
+        if incoming_data is None:
+            data = get_data_from_database(game)
+        else:
+            data = incoming_data
         self.rv.scroll_type = ['bars', 'content']
         self.rv.data = [{
             'image': pokemon.picture_link,
@@ -74,18 +77,6 @@ class PokedexGrid(GridLayout):
             return pokemon.type_2
         return ''
 
-    def update_data(self, data):
-        self.rv.data = [{
-            'image': pokemon.picture_link,
-            'pokedex_number': pokemon.pokedex_number,
-            'form_name': pokemon.form_name,
-            'type_1': pokemon.type_1,
-            'type_2': self.get_type_2(pokemon),
-            'cp_40': self.round_stats(pokemon.max_cp_40),
-            'cp_50': self.round_stats(pokemon.max_cp_50),
-            'root_widget': self
-        } for pokemon in data]
-
     def open_pokemon_page(self, form):
         from . import pokemon_pages
         page_name = self.game + " " + form
@@ -102,7 +93,7 @@ class Pokedex(Screen):
         from .filters import filters
         self.game = game
         self.filters = filters[game]()
-        self.grid = PokedexGrid(game)
+        self.grid = PokedexGrid(game, incoming_data=None)
         self.add_widget(self.grid)
 
     def update(self):
@@ -120,6 +111,12 @@ class Pokedex(Screen):
 
     def game_selection(self):
         self.manager.current = 'pokedex game selection'
+
+    def update_data(self, data):
+        self.remove_widget(self.grid)
+        delattr(self, 'grid')
+        self.grid = PokedexGrid(self.game, incoming_data=data)
+        self.add_widget(self.grid)
 
 
 class DataCollectorScreen(Screen):

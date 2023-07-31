@@ -41,7 +41,7 @@ class TypeExcluder(GridLayout):
 
 class GoFilters(DropDown):
 
-    def apply(self):
+    def filter(self):
         type_1 = self.ids['type_1'].text
         type_2 = self.ids['type_2'].text
         if type_1 == 'Выберите тип':
@@ -82,7 +82,7 @@ class GoFilters(DropDown):
         for child in self.parent.children:
             if child != self:
                 manager = child
-        manager.current_screen.grid.update_data(data=result)
+        manager.current_screen.update_data(data=result)
 
 
 filters = {'Pokemon Go': GoFilters}

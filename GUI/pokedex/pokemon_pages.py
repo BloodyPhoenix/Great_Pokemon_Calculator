@@ -9,8 +9,8 @@ def round_stats(stat):
 
 class GoPokemonPage(Screen):
 
-    def __init__(self, form, **kw):
-        super().__init__(**kw)
+    def __init__(self, form, **kwargs):
+        super().__init__(**kwargs)
         data = get_single_pokemon_data('Pokemon Go', form)
         self.pokemon_image = data.picture_link
         self.pokemon_number = f'Номер: {data.pokedex_number}'
