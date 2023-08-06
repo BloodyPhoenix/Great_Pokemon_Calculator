@@ -166,7 +166,7 @@ class Pokemon(Base):
                     current_pokemon.charge_moves.append(move)
                     session.commit()
             for move in current_pokemon.charge_moves:
-                if move not in fast_moves:
+                if move not in charge_moves:
                     current_pokemon.charge_moves.remove(move)
                     session.add(move)
                     session.commit()

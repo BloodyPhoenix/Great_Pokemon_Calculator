@@ -7,8 +7,11 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
                    no_mythics=False, no_megas=False, ordering='pokedex', desc=True):
     from databases import create_engine, GoPokemon, FastMove, ChargeMove
     types_selection = (GoPokemon.type_1 is not None)
-    exclude_moves = ((GoPokemon.fast_moves.any(FastMove.type == pokemon_type_1)) &
-                     (GoPokemon.charge_moves.any(ChargeMove.type == pokemon_type_1)))
+    if exclude_no_moves:
+        exclude_moves = (GoPokemon.fast_moves.any(FastMove.type == pokemon_type_1) &
+                         GoPokemon.charge_moves.any(ChargeMove.type == pokemon_type_1))
+    else:
+        exclude_moves = (GoPokemon.fast_moves is not None)
     options = []
     if all_types:
         types_selection = (GoPokemon.type_1 == pokemon_type_1) | (GoPokemon.type_2 == pokemon_type_1)
@@ -36,17 +39,11 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     session = local_session()
     if options:
-        if exclude_no_moves:
-            result = session.query(GoPokemon).where(
+        result = session.query(GoPokemon).where(
                 types_selection & exclude_moves & and_(*(option[0] == option[1] for option in options))
             )
-        else:
-            result = session.query(GoPokemon).where(and_(*(option[0] == option[1] for option in options)))
     else:
-        if exclude_no_moves:
-            result = session.query(GoPokemon).where(types_selection & exclude_moves)
-        else:
-            result = session.query(GoPokemon).where(types_selection)
+        result = session.query(GoPokemon).where(types_selection & exclude_moves)
     if desc:
         return result.order_by(ordering.desc())
     else:

@@ -1,3 +1,4 @@
+from kivy.uix.screenmanager import Screen
 from sqlalchemy.orm import sessionmaker
 
 
@@ -17,8 +18,7 @@ def collect_data(game, prev_screen):
     from GUI import DataCollectorScreen
     scrapper = scrappers_dict[game]
     proceed_screen = DataCollectorScreen(game=prev_screen.game, name='proceed screen')
-    prev_screen.manager.add_widget(proceed_screen)
-    prev_screen.managerswitch_to('proceed screen')
+    prev_screen.manager.switch_to(proceed_screen)
     proceed_screen.start_collection(scrapper)
 
 

@@ -1,3 +1,106 @@
+<FastMoveGrid>:
+    name: ''
+    move_type: ''
+    power_pve: ''
+    speed_pve: ''
+    energy_pve: ''
+    power_pvp: ''
+    speed_pvp: ''
+    energy_pvp: ''
+    rows: 5
+    cols: 1
+    GridLayout:
+        height: sum([c.height for c in self.children])
+        rows: 1
+        cols: 4
+        Label:
+            size: self.texture_size
+            text: "Название:"
+        Label:
+            size: self.texture_size
+            text: root.name
+        Label:
+            size: self.texture_size
+            text: "Тип:"
+        Label:
+            size: self.texture_size
+            text: root.move_type
+    Label:
+        size: self.texture_size
+        text: "Данные в PvE"
+    GridLayout:
+        rows: 3
+        cols: 2
+        height: sum([c.height for c in self.children])
+        size_hint_y: None
+        Label:
+            size: self.texture_size
+            text: "Сила"
+        Label:
+            size: self.texture_size
+            text: "Скорость"
+        Label:
+            size: self.texture_size
+            text: "Энергия"
+        Label:
+            text: root.power_pve
+            size: self.texture_size
+        Label:
+            text: root.speed_pve
+            size: self.texture_size
+        Label:
+            text: root.energy_pve
+            size: self.texture_size
+    Label:
+        size: self.texture_size
+        text: "Данные в PvP"
+    GridLayout:
+        rows: 3
+        cols: 2
+        height: sum([c.height for c in self.children])
+        Label:
+            size: self.texture_size
+            text: "Сила"
+        Label:
+            size: self.texture_size
+            text: "Скорость"
+        Label:
+            text: "Энергия"
+            size: self.texture_size
+        Label:
+            text: root.power_pvp
+            size: self.texture_size
+        Label:
+            text: root.speed_pvp
+            size: self.texture_size
+        Label:
+            text: root.energy_pvp
+            size: self.texture_size
+
+
+<MovesSection>:
+    fast_moves_amount: 1
+    charge_moves_amount: 1
+    fast_moves_section: fast_moves_section
+    charge_moves_section: charge_moves_section
+    rows: 1
+    cols: 2
+    height: sum([c.height for c in self.children])
+    size_hint_y: None
+    GridLayout:
+        id: fast_moves_section
+        cols: 1
+        rows: root.fast_moves_amount
+        height: sum([c.height for c in self.children])
+        size_hint_y: None
+    GridLayout:
+        id: charge_moves_section
+        cols: 1
+        rows: root.charge_moves_amount
+        height: sum([c.height for c in self.children])
+        size_hint_y: None
+
+
 <GoPokemonPage>:
     pokemon_image: ''
     pokemon_number: ''
@@ -16,6 +119,7 @@
     attack_lvl_50: ''
     defence_lvl_50: ''
     cp_lvl_50: ''
+    moves_section: moves_section
     Widget:
         ScrollView:
             top: root.height/11*10
@@ -55,76 +159,85 @@
                             size: self.texture_size
                             text: root.pokemon_type_2
                             halign: 'left'
+                GridLayout:
+                    cols: 3
+                    rows: 2
+                    Label:
+                        size: self.texture_size
+                        text: "Базовые параметры"
+                    Label:
+                        text: "Максимальные параметры\n             уровень 40"
+                    Label:
+                        text: "Максимальные параметры\n             уровень 50"
+                    GridLayout:
+                        rows: 3
+                        cols: 2
+                        Label:
+                            size: self.texture_size
+                            text: 'HP'
+                        Label:
+                            size: self.texture_size
+                            text: root.base_hp
+                        Label:
+                            size: self.texture_size
+                            text: 'Атака'
+                        Label:
+                            size: self.texture_size
+                            text: root.base_attack
+                        Label:
+                            size: self.texture_size
+                            text: 'Защита'
+                        Label:
+                            size: self.texture_size
+                            text: root.base_defence
+                    GridLayout:
+                        rows: 4
+                        cols: 2
+                        Label:
+                            text: 'HP'
+                        Label:
+                            text: root.hp_lvl_40
+                        Label:
+                            text: 'Атака'
+                        Label:
+                            text: root.attack_lvl_40
+                        Label:
+                            text: 'Защита'
+                        Label:
+                            text: root.defence_lvl_40
+                        Label:
+                            text: 'CP'
+                        Label:
+                            text: root.cp_lvl_40
+                    GridLayout:
+                        rows: 4
+                        cols: 2
+                        Label:
+                            text: 'HP'
+                        Label:
+                            text: root.hp_lvl_50
+                        Label:
+                            text: 'Атака'
+                        Label:
+                            text: root.attack_lvl_50
+                        Label:
+                            text: 'Защита'
+                        Label:
+                            text: root.defence_lvl_50
+                        Label:
+                            text: 'CP'
+                        Label:
+                            text: root.cp_lvl_50
                 Label:
-                    size: self.texture_size
-                    text: "Базовые параметры"
-                GridLayout:
-                    rows: 3
-                    cols: 2
-                    Label:
-                        size: self.texture_size
-                        text: 'HP'
-                    Label:
-                        size: self.texture_size
-                        text: root.base_hp
-                    Label:
-                        size: self.texture_size
-                        text: 'Атака'
-                    Label:
-                        size: self.texture_size
-                        text: root.base_attack
-                    Label:
-                        size: self.texture_size
-                        text: 'Защита'
-                    Label:
-                        size: self.texture_size
-                        text: root.base_defence
-                Label:
-                    text: "Максимальные параметры уровень 40"
-                GridLayout:
-                    rows: 4
-                    cols: 2
-                    Label:
-                        text: 'HP'
-                    Label:
-                        text: root.hp_lvl_40
-                    Label:
-                        text: 'Атака'
-                    Label:
-                        text: root.attack_lvl_40
-                    Label:
-                        text: 'Защита'
-                    Label:
-                        text: root.defence_lvl_40
-                    Label:
-                        text: 'CP'
-                    Label:
-                        text: root.cp_lvl_40
-                Label:
-                    text: "Максимальные параметры уровень 50"
-                GridLayout:
-                    rows: 4
-                    cols: 2
-                    Label:
-                        text: 'HP'
-                    Label:
-                        text: root.hp_lvl_50
-                    Label:
-                        text: 'Атака'
-                    Label:
-                        text: root.attack_lvl_50
-                    Label:
-                        text: 'Защита'
-                    Label:
-                        text: root.defence_lvl_50
-                    Label:
-                        text: 'CP'
-                    Label:
-                        text: root.cp_lvl_50
-                GridLayout:
+                    text: "Данные об атаках"
                     size_hint_y: None
+                MovesSection:
+                    size_hint_y: None
+                    id: moves_section
+                    height: sum([c.height for c in self.children])
+                GridLayout:
                     cols: 1
-                    row_default_height: 100
+                    row_default_height: 150
                     row_force_default: True
         Button:
             id: pokedex
