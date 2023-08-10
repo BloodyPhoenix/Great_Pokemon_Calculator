@@ -1,4 +1,5 @@
 from .pokedex_filters import get_pokemon as get_pokemon_go
+from .formulas import go_stats
 
 
 TYPE_DICT = {"normal": "нормальный", "fighting": "боевой", "flying": "летающий", "poison": "ядовитый",
@@ -12,4 +13,4 @@ GO_CP_MULTIPLIER_50 = 0.84529999
 games = ['Pokemon HOME', 'Pokemon Go', 'Pokemon Red&Blue', 'Pokemon Yellow', 'Pokemon Gold&Silver',
          'Pokemon Scarlet&Violet', 'TYPE_DICT', 'GO_CP_MULTIPLIER_40', 'GO_CP_MULTIPLIER_5']
 
-__all__ = ['games', 'TYPE_DICT', 'GO_CP_MULTIPLIER_50', 'GO_CP_MULTIPLIER_40', 'get_pokemon_go']
+__all__ = ['games', 'TYPE_DICT', 'GO_CP_MULTIPLIER_50', 'GO_CP_MULTIPLIER_40', 'get_pokemon_go', 'go_stats']

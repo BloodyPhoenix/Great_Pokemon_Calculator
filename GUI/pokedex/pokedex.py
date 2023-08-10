@@ -1,9 +1,6 @@
-from kivy.properties import ObjectProperty, BooleanProperty
-from kivy.uix.behaviors import ButtonBehavior, FocusBehavior
+from kivy.properties import BooleanProperty
+from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.dropdown import DropDown
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -11,7 +8,20 @@ from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import Screen
-from databases import collect_data, get_data_from_database, get_single_pokemon_data
+from databases import collect_data, get_data_from_database
+from kivy.uix.screenmanager import Screen
+
+from GUI.pokedex.pokemon_pages import DATA_GRIDS
+from databases import get_single_pokemon_data
+
+
+class PokemonPage(Screen):
+    def __init__(self, game, form, **kwargs):
+        super().__init__(**kwargs)
+        self.game = game
+        self.data = get_single_pokemon_data(game, form)
+        widget = DATA_GRIDS[self.game]
+        self.add_widget(widget(form))
 
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
@@ -78,10 +88,8 @@ class PokedexGrid(GridLayout):
         return ''
 
     def open_pokemon_page(self, form):
-        from . import pokemon_pages
         page_name = self.game + " " + form
-        page = pokemon_pages[self.game]
-        page = page(form, name=page_name)
+        page = PokemonPage(self.game, form, name=page_name)
         self.parent.manager.add_widget(page)
         self.parent.manager.current = page_name
 
@@ -154,3 +162,6 @@ class NoData(Screen):
 
     def input_data(self):
         pass
+
+
+
