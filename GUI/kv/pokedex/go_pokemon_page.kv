@@ -41,6 +41,44 @@
             text: root.energy_pvp
 
 
+<ChargeMoveInfo>
+    damage_pve: ''
+    charges: ''
+    damage_pvp: ''
+    energy: ''
+    speed: ''
+    canvas.before:
+        Color:
+            rgba: 0.25, 0.25, 0.25, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    GridLayout:
+        rows: 5
+        cols: 2
+        size_hint_y: None
+        Label:
+            text: "Урон в PvE:"
+        Label:
+            text: root.damage_pve
+        Label:
+            text: "Урон в PvP:"
+        Label:
+            text: root.damage_pvp
+        Label:
+            text: "Заряды:"
+        Label:
+            text: root.charges
+        Label:
+            text: "Энергия: "
+        Label:
+            text: root.energy
+        Label:
+            text: "Скорость:"
+        Label:
+            text: root.speed
+
+
 <MovePreview>:
     on_release: root.full_info.open(self)
 

@@ -17,14 +17,15 @@ class FastMoveInfo(DropDown):
         self.energy_pve = str(round(energy_pve/speed_pve, 2))
         self.energy_pvp = str(round(energy_pvp/speed_pve, 2))
 
-    def open(self, widget):
-        super().open(widget)
-        print('Tried to open move data')
-
 
 class ChargeMoveInfo(DropDown):
-    pass
-
+    def __init__(self, damage_pve, damage_pvp, energy, charges, speed, **kwargs):
+        super().__init__(**kwargs)
+        self.damage_pve = str(damage_pve)
+        self.energy = str(energy)
+        self.damage_pvp = str(damage_pvp)
+        self.charges = str(charges)
+        self.speed = str(speed)
 
 class MovePreview(Button):
     def __init__(self, move, charge=True, **kwargs):
@@ -34,7 +35,8 @@ class MovePreview(Button):
         self.move_type = self.move.type
         self.text = f'Название: {self.name}            Тип: {self.move_type}'
         if charge:
-            self.full_info = ChargeMoveInfo()
+            self.full_info = ChargeMoveInfo(self.move.damage_pve, self.move.damage_pvp, self.move.speed,
+                                            self.move.charges_pve, self.move.energy_pvp)
         else:
             self.full_info = FastMoveInfo(self.move.damage_pve, self.move.damage_pvp, self.move.energy_pve,
                                           self.move.energy_pvp, self.move.speed_pve, self.move.speed_pvp)
