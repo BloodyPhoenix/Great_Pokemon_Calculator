@@ -146,6 +146,31 @@
             text: root.pokemon_type_2
             halign: 'left'
 
+<ResistsGrid>:
+    size_hint_y: None
+    rows: 2
+    cols: 3
+    resists: ''
+    weaknesses: ''
+    immunite: ''
+    Label:
+        size: self.texture_size
+        text: "Сопротивления"
+    Label:
+        size: self.texture_size
+        text: "Слабости"
+    Label:
+        size: self.texture_size
+        text: "Иммунитеты"
+    Label:
+        size: self.texture_size
+        text: root.resists
+    Label:
+        size: self.texture_size
+        text: root.weaknesses
+    Label:
+        size: self.texture_size
+        text: root.immunite
 
 <StatsGrid>:
     rows: 2

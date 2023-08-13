@@ -1,5 +1,6 @@
 from .pokedex_filters import get_pokemon as get_pokemon_go, search_by_name as search_by_name_go
 from .formulas import go_stats
+from .type_chart import calculate_resists, type_chart
 
 
 TYPE_DICT = {"normal": "нормальный", "fighting": "боевой", "flying": "летающий", "poison": "ядовитый",
@@ -14,4 +15,4 @@ games = ['Pokemon HOME', 'Pokemon Go', 'Pokemon Red&Blue', 'Pokemon Yellow', 'Po
          'Pokemon Scarlet&Violet', 'TYPE_DICT', 'GO_CP_MULTIPLIER_40', 'GO_CP_MULTIPLIER_5']
 
 __all__ = ['games', 'TYPE_DICT', 'GO_CP_MULTIPLIER_50', 'GO_CP_MULTIPLIER_40', 'get_pokemon_go', 'go_stats',
-           'search_by_name_go']
+           'search_by_name_go', 'calculate_resists', 'type_chart']

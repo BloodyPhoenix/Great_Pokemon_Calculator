@@ -12,10 +12,10 @@ class FastMoveInfo(DropDown):
 
     def __init__(self, damage_pve, damage_pvp, energy_pve, energy_pvp, speed_pve, speed_pvp, **kwargs):
         super().__init__(**kwargs)
-        self.damage_pve = str(round(damage_pve/speed_pve, 2))
-        self.damage_pvp = str(round(damage_pvp/speed_pvp, 2))
-        self.energy_pve = str(round(energy_pve/speed_pve, 2))
-        self.energy_pvp = str(round(energy_pvp/speed_pve, 2))
+        self.damage_pve = str(round(damage_pve / speed_pve, 2))
+        self.damage_pvp = str(round(damage_pvp / speed_pvp, 2))
+        self.energy_pve = str(round(energy_pve / speed_pve, 2))
+        self.energy_pvp = str(round(energy_pvp / speed_pve, 2))
 
 
 class ChargeMoveInfo(DropDown):
@@ -26,6 +26,7 @@ class ChargeMoveInfo(DropDown):
         self.damage_pvp = str(damage_pvp)
         self.charges = str(charges)
         self.speed = str(speed)
+
 
 class MovePreview(Button):
     def __init__(self, move, charge=True, **kwargs):
@@ -94,26 +95,59 @@ class StatsLevel50(GridLayout):
         self.cp_lvl_50 = cp_lvl_50
 
 
-class MovesInfo():
+class MovesInfo:
     pass
+
+
+class ResistsGrid(GridLayout):
+    def __init__(self, data, **kwargs):
+        super().__init__(**kwargs)
+        self.resists = ''
+        resists_counter = 0
+        string = []
+        for resist in data['resists']:
+            string.append(resist)
+            resists_counter += 1
+            if resists_counter % 3 == 0:
+                string = ', '.join(string)
+                self.resists += string+'\n'
+                string = []
+        self.weaknesses = ''
+        string = []
+        weaknesses_counter = 0
+        for weaknesses in data['weaknesses']:
+            string.append(weaknesses)
+            weaknesses_counter += 1
+            if weaknesses_counter % 3 == 0:
+                string = ', '.join(string)
+                self.weaknesses += string+'\n'
+                string = []
+        self.immunite = ', '.join(data['immunite'])
+
 
 
 class GoDataGrid(GridLayout):
 
     def __init__(self, form, **kwargs):
         super().__init__(**kwargs)
+        from utils import calculate_resists
         data = get_single_pokemon_data('Pokemon Go', form)
         fast_moves_amount = len(data.fast_moves)
         charge_moves_amount = len(data.charge_moves)
+        type_1 = data.type_1
+        type_2 = self.get_type_2(data)
         base_data = BaseData(
             pokemon_image=data.picture_link,
             pokemon_number=data.pokedex_number,
             pokemon_species=data.species_name,
             pokemon_form=data.form_name,
-            pokemon_type_1=data.type_1,
-            pokemon_type_2=self.get_type_2(data)
+            pokemon_type_1=type_1,
+            pokemon_type_2=type_2
         )
         self.scroll_box.add_widget(base_data)
+        resists_data = calculate_resists(type_1, type_2.split()[-1])
+        resists_grid = ResistsGrid(resists_data)
+        self.scroll_box.add_widget(resists_grid)
         stats_grid = StatsGrid()
         stats_grid.add_widget(BaseStats(str(data.base_hp), str(data.base_attack), str(data.base_defence)))
         stats_grid.add_widget(StatsLevel40(
