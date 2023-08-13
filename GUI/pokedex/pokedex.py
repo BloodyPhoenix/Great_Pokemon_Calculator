@@ -7,10 +7,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivy.uix.screenmanager import Screen
 from databases import collect_data, get_data_from_database
 from kivy.uix.screenmanager import Screen
-
 from GUI.pokedex.pokemon_pages import DATA_GRIDS
 from databases import get_single_pokemon_data
 
@@ -22,6 +20,15 @@ class PokemonPage(Screen):
         self.data = get_single_pokemon_data(game, form)
         widget = DATA_GRIDS[self.game]
         self.add_widget(widget(form))
+
+    def to_main(self):
+        self.manager.current = 'main screen'
+
+    def game_selection(self):
+        self.manager.current = 'pokedex game selection'
+
+    def pokedex(self):
+        self.manager.current = 'Pokemon Go pokedex'
 
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
@@ -100,7 +107,8 @@ class Pokedex(Screen):
         super().__init__(**kwargs)
         from .filters import filters
         self.game = game
-        self.filters = filters[game]()
+        self.filters = filters[game]['property_filer']()
+        self.name_filter = filters[game]['name_filter']
         self.grid = PokedexGrid(game, incoming_data=None)
         self.add_widget(self.grid)
 
@@ -120,11 +128,15 @@ class Pokedex(Screen):
     def game_selection(self):
         self.manager.current = 'pokedex game selection'
 
-    def update_data(self, data):
+    def update_data(self, new_data):
         self.remove_widget(self.grid)
         delattr(self, 'grid')
-        self.grid = PokedexGrid(self.game, incoming_data=data)
+        self.grid = PokedexGrid(self.game, incoming_data=new_data)
         self.add_widget(self.grid)
+
+    def filter_by_name(self):
+        new_data = self.name_filter(self.pokemon_name.text)
+        self.update_data(new_data)
 
 
 class DataCollectorScreen(Screen):

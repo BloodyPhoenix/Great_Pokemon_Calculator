@@ -1,6 +1,15 @@
 #:kivy 2.1.0
 <Pokedex>:
+    pokemon_name: pokemon_name
     Widget:
+        TextInput:
+            id: pokemon_name
+            multiline: False
+            center_y: root.height - root.height * 0.05
+            center_x: root.width * 0.35
+            font_size: 24
+            size: 500, 50
+            on_text_validate: root.filter_by_name()
         Button:
             center_y: root.height - root.height * 0.05
             center_x: root.width * 0.85

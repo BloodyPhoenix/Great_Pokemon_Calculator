@@ -3,6 +3,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
+from utils import search_by_name_go
 
 
 class TypeFilter(Spinner):
@@ -82,7 +83,7 @@ class GoFilters(DropDown):
         for child in self.parent.children:
             if child != self:
                 manager = child
-        manager.current_screen.update_data(data=result)
+        manager.current_screen.update_data(new_data=result)
 
 
-filters = {'Pokemon Go': GoFilters}
+filters = {'Pokemon Go': {'name_filter': search_by_name_go, 'property_filer': GoFilters}}

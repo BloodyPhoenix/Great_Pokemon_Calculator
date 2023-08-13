@@ -48,3 +48,11 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
         return result.order_by(ordering.desc())
     else:
         return result.order_by(ordering.asc())
+
+
+def search_by_name(pokemon_name):
+    from databases import create_engine, GoPokemon
+    engine = create_engine()
+    local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+    session = local_session()
+    return session.query(GoPokemon).where(GoPokemon.species_name.like(f'{pokemon_name}%'))

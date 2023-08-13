@@ -1,81 +1,65 @@
-<FastMoveGrid>:
-    name: ''
-    move_type: ''
-    power_pve: ''
+<FastMoveInfo>:
+    damage_pve: ''
+    damage_pvp: ''
     speed_pve: ''
-    energy_pve: ''
-    power_pvp: ''
     speed_pvp: ''
+    energy_pve: ''
     energy_pvp: ''
-    orientation: 'vertical'
-    height: sum([c.height for c in self.children])
+    canvas.before:
+        Color:
+            rgba: 0.25, 0.25, 0.25, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Label:
+        text: "Данные в PvE"
     GridLayout:
-        rows: 1
-        cols: 4
         size_hint_y: None
-        Label:
-            text: "Название:"
-        Label:
-            text: root.name
-        Label:
-            text: "Тип:"
-        Label:
-            text: root.move_type
-    GridLayout:
         cols: 2
-        rows: 1
+        rows: 3
+        Label:
+            text: "Урон в секунду:"
+        Label:
+            text: root.damage_pve
+        Label:
+            text: "Энергия в секунду:"
+        Label:
+            text: root.energy_pve
+    Label:
+        text: "Данные в PvP"
+    GridLayout:
         size_hint_y: None
-        height: sum([c.height for c in self.children])
-        BoxLayout:
-            size_hint_y: None
-            orientation: 'vertical'
-            Label:
-                text: "Данные в PvE"
-            GridLayout:
-                rows: 3
-                cols: 2
-                Label:
-                    text: "Сила"
-                Label:
-                    text: root.power_pve
-                Label:
-                    text: "Скорость"
-                Label:
-                    text: root.speed_pve
-                Label:
-                    text: "Энергия"
-                Label:
-                    text: root.energy_pve
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            Label:
-                text: "Данные в PvP"
-            GridLayout:
-                rows: 3
-                cols: 2
-                Label:
-                    text: "Сила"
-                Label:
-                    text: root.power_pvp
-                Label:
-                    text: "Скорость"
-                Label:
-                    text: root.speed_pvp
-                Label:
-                    text: "Энергия"
-                Label:
-                    text: root.energy_pvp
+        cols: 2
+        rows: 3
+        Label:
+            text: "Урон в секунду:"
+        Label:
+            text: root.damage_pvp
+        Label:
+            text: "Энергия в секунду:"
+        Label:
+            text: root.energy_pvp
+
+
+<MovePreview>:
+    on_release: root.full_info.open(self)
+
 
 <MovesSection>:
     fast_moves_amount: 1
     charge_moves_amount: 1
     fast_moves_section: fast_moves_section
     charge_moves_section: charge_moves_section
-    rows: 1
+    rows: 2
     cols: 2
     size_hint_y: None
     height: sum([c.height for c in self.children])
+    Label:
+        size: self.texture_size
+        text: "Быстрые атаки"
+    Label:
+        size: self.texture_size
+        text: "Заряжаемые атаки"
     GridLayout:
         id: fast_moves_section
         cols: 1

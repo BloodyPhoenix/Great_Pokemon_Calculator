@@ -1,5 +1,5 @@
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
@@ -8,24 +8,39 @@ from databases import get_single_pokemon_data
 from utils.formulas import round_stats
 
 
-class FastMoveGrid(BoxLayout):
-    def __init__(self, name, move_type, power_pve, speed_pve, energy_pve, power_pvp, speed_pvp, energy_pvp, **kwargs):
+class FastMoveInfo(DropDown):
+
+    def __init__(self, damage_pve, damage_pvp, energy_pve, energy_pvp, speed_pve, speed_pvp, **kwargs):
         super().__init__(**kwargs)
-        self.name = name
-        self.move_type = move_type
-        self.power_pve = str(power_pve)
-        self.speed_pve = str(speed_pve)
-        self.energy_pve = str(energy_pve)
-        self.power_pvp = str(power_pvp)
-        self.speed_pvp = str(speed_pvp)
-        self.energy_pvp = str(energy_pvp)
+        self.damage_pve = str(round(damage_pve/speed_pve, 2))
+        self.damage_pvp = str(round(damage_pvp/speed_pvp, 2))
+        self.energy_pve = str(round(energy_pve/speed_pve, 2))
+        self.energy_pvp = str(round(energy_pvp/speed_pve, 2))
+
+    def open(self, widget):
+        super().open(widget)
+        print('Tried to open move data')
 
 
-class ChargeMovesGrid(GridLayout):
+class ChargeMoveInfo(DropDown):
     pass
 
 
-class MovesSection(AnchorLayout):
+class MovePreview(Button):
+    def __init__(self, move, charge=True, **kwargs):
+        super().__init__(**kwargs)
+        self.move = move
+        self.name = self.move.name
+        self.move_type = self.move.type
+        self.text = f'Название: {self.name}            Тип: {self.move_type}'
+        if charge:
+            self.full_info = ChargeMoveInfo()
+        else:
+            self.full_info = FastMoveInfo(self.move.damage_pve, self.move.damage_pvp, self.move.energy_pve,
+                                          self.move.energy_pvp, self.move.speed_pve, self.move.speed_pvp)
+
+
+class MovesSection(GridLayout):
     def __init__(self, fast_moves_amount, charge_moves_amount, **kwargs):
         super().__init__(**kwargs)
         self.fast_moves_amount = fast_moves_amount
@@ -40,8 +55,11 @@ class BaseData(GridLayout):
         self.pokemon_number = pokemon_number
         self.pokemon_species = pokemon_species
         self.pokemon_form = pokemon_form
-        self.pokemon_type_1 = pokemon_type_1
         self.pokemon_type_2 = pokemon_type_2
+        if len(self.pokemon_type_2) > 0:
+            self.pokemon_type_1 = f'Первый тип: {pokemon_type_1}'
+        else:
+            self.pokemon_type_1 = f'Тип: {pokemon_type_1}'
 
 
 class StatsGrid(GridLayout):
@@ -74,6 +92,10 @@ class StatsLevel50(GridLayout):
         self.cp_lvl_50 = cp_lvl_50
 
 
+class MovesInfo():
+    pass
+
+
 class GoDataGrid(GridLayout):
 
     def __init__(self, form, **kwargs):
@@ -102,26 +124,18 @@ class GoDataGrid(GridLayout):
         self.scroll_box.add_widget(Label(text="Данные о движениях", height=100, size_hint_y=None))
         moves_section = MovesSection(fast_moves_amount=fast_moves_amount, charge_moves_amount=charge_moves_amount)
         for move in data.fast_moves:
-            move_grid = FastMoveGrid(name=move.name, move_type=move.type, power_pve=move.damage_pve,
-                                     speed_pve=move.speed_pve, energy_pve=move.energy_pve, power_pvp=move.damage_pvp,
-                                     speed_pvp=move.speed_pvp, energy_pvp=move.energy_pvp)
-            moves_section.fast_moves_section.add_widget(move_grid)
+            move_preview = MovePreview(move, charge=False)
+            moves_section.fast_moves_section.add_widget(move_preview)
+        for move in data.charge_moves:
+            move_preview = MovePreview(move, charge=True)
+            moves_section.charge_moves_section.add_widget(move_preview)
         self.scroll_box.add_widget(moves_section)
 
     @staticmethod
     def get_type_2(pokemon):
         if pokemon.type_2:
-            return f"Тип два: {pokemon.type_2}"
+            return f"Второй тип: {pokemon.type_2}"
         return ''
-
-    def to_main(self):
-        self.manager.current = 'main screen'
-
-    def game_selection(self):
-        self.manager.current = 'pokedex game selection'
-
-    def pokedex(self):
-        self.manager.current = 'Pokemon Go pokedex'
 
 
 class PokemonEditScreen(Screen):
