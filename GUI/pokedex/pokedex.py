@@ -14,6 +14,11 @@ from databases import get_single_pokemon_data
 
 
 class PokemonPage(Screen):
+    """
+    Базовый класс индивидуальной странички покемона.
+    Ищет в словаре DATA_GRIDS виджет, соответствующий заданной игре, и генерирует его, передавая требующиеся
+    данные о покемоне.
+    """
     def __init__(self, game, form, **kwargs):
         super().__init__(**kwargs)
         self.game = game
@@ -22,47 +27,61 @@ class PokemonPage(Screen):
         self.add_widget(widget(form))
 
     def to_main(self):
+        """
+        Возвращает пользователя на главный экран
+        """
         self.manager.current = 'main screen'
 
     def game_selection(self):
+        """
+        Возвращает пользователя на экран выбора игры
+        """
         self.manager.current = 'pokedex game selection'
 
     def pokedex(self):
+        """
+        Возвращает пользователя на экран покедекса
+        """
         self.manager.current = 'Pokemon Go pokedex'
 
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+    """Класс, позволяющий создать проматываемую сетку покедекса с возможностью выбора по щелчку"""
     pass
 
 
 class RowLayout(BoxLayout, RecycleDataViewBehavior):
-    ''' Add selection support to the Label '''
+    '''Класс отдельного ряда в покедексе'''
     index = None
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
 
     def refresh_view_attrs(self, rv, index, data):
-        ''' Catch and handle the view changes '''
+        '''Обработчик изменений виджета'''
         self.index = index
         return super(RowLayout, self).refresh_view_attrs(
             rv, index, data)
 
     def on_touch_down(self, touch):
-        ''' Add selection on touch down '''
+        '''Позволяет выбрать определённую строчку'''
         if super(RowLayout, self).on_touch_down(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):
-        ''' Respond to the selection of items in the view. '''
+        '''Применить выбор и переключитьса на индивидуальную странчку покемона, вызвав функцию open_pokemon_page
+        у класса PokedexGrid, дальним потомком которого является конкретный ряд'''
         self.selected = is_selected
         if is_selected:
             self.parent.parent.parent.parent.open_pokemon_page(self.form.text)
 
 
 class PokedexGrid(GridLayout):
-
+    """
+    Класс сетки покедекса.
+    Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку
+    """
     def __init__(self, game, incoming_data, **kwargs):
         super().__init__(**kwargs)
         self.game = game
@@ -85,16 +104,26 @@ class PokedexGrid(GridLayout):
 
     @staticmethod
     def round_stats(stat):
+        """
+        Округляет стат покемона
+        Нужно заменить соответствующей функцией модуля utils
+        """
         return str(int(stat + (0.5 if stat > 0 else -0.5)))
-
 
     @staticmethod
     def get_type_2(pokemon):
+        """
+        Возвращает пустую строку, если второй тип у покемона отсутствует. Необходима для корректной обработки и
+        графического представления данных. Возможно, стоит вынести в utils.
+        """
         if pokemon.type_2:
             return pokemon.type_2
         return ''
 
     def open_pokemon_page(self, form):
+        """
+        Создать и открыть страничку конкретного покемона
+        """
         page_name = self.game + " " + form
         page = PokemonPage(self.game, form, name=page_name)
         self.parent.manager.add_widget(page)
@@ -102,6 +131,12 @@ class PokedexGrid(GridLayout):
 
 
 class Pokedex(Screen):
+    """
+    Базовый экран покедекса.
+    Ищет в словаре фильтров те, что соответствуют заданной игре, и добавляет в качестве виджетов
+    Создаёт секцию покедекса, передавая в неё данные о нужной игре.
+    Создаёт базовые кнопки навигации
+    """
 
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
@@ -113,6 +148,9 @@ class Pokedex(Screen):
         self.add_widget(self.grid)
 
     def update(self):
+        """
+        Автоматическое обновление базы данных с помощью скраппера
+        """
         try:
             collect_data(self.game, self)
         except KeyError:
@@ -123,23 +161,41 @@ class Pokedex(Screen):
             popup.open()
 
     def to_main(self):
+        """
+        Возвращение на главный экран
+        """
         self.manager.current = 'main screen'
 
     def game_selection(self):
+        """
+        Возвращение в меню выбора игры
+        """
         self.manager.current = 'pokedex game selection'
 
     def update_data(self, new_data):
+        """
+        Обновление сетки покедекса после применения фильтров.
+        НИЧЕГО НЕ ДЕЛАЕТ С БАЗОЙ
+        Сетку покедекса приходится пересоздавать из-за специфической ошибки, возникающей, если после применения фильтра
+        выбрать покемона, затем вернуться в покедекс и применить другой фильтр.
+        """
         self.remove_widget(self.grid)
         delattr(self, 'grid')
         self.grid = PokedexGrid(self.game, incoming_data=new_data)
         self.add_widget(self.grid)
 
     def filter_by_name(self):
+        """
+        Применение фильтра по названию. Вызывает ранее найденную функцию фильтрации и обновляет сетку полученными данными
+        """
         new_data = self.name_filter(self.pokemon_name.text)
         self.update_data(new_data)
 
 
 class DataCollectorScreen(Screen):
+    """
+    Экран ожидания при получении данных скраппингом. В текущем однопоточном режиме работы приложения не открывается
+    """
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
         self.game = game
@@ -152,6 +208,10 @@ class DataCollectorScreen(Screen):
 
 
 class NoData(Screen):
+    """
+    Экран, который возникает, если нет данных по какой-то игре. Методы аналогичны классу Pokedex, но их не столько,
+    чтобы усложнять иерархию наследования
+    """
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
         self.game = game

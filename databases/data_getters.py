@@ -2,6 +2,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 def pokemon_go_data_getter():
+    """Функция, предоставляющая общие данные о покедмонах для покедекса Pokemon Go"""
     from databases import create_engine, GoPokemon
     engine = create_engine()
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
@@ -12,6 +13,7 @@ def pokemon_go_data_getter():
 
 
 def single_go_data_getter(pokemon: str):
+    """Функция, предоставляющая данные об обном покемоне в Pokemon Go для отрисовки его индивидуальной странички"""
     from databases import create_engine, GoPokemon
     engine = create_engine()
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)

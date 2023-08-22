@@ -6,7 +6,9 @@ from GUI import MainScreen,GameSelection
 from kivy.lang import Builder
 from dotenv import load_dotenv
 
-
+'''
+Основной файл запуска приложения. Строит базовую структуру kivy, подгружает необходимые файлы и переменные окружения"
+'''
 load_dotenv('utils/settings/postgres_config.env')
 
 for path, _, files in walk('./GUI/kv/'):
@@ -20,8 +22,6 @@ class GPCApp(App):
         manager = ScreenManager()
         manager.add_widget(MainScreen(name='main screen'))
         manager.add_widget(GameSelection(name='pokedex game selection'))
-        pokedex_game_selection = manager.get_screen('pokedex game selection')
-        pokedex_game_selection.add_buttons()
         manager.current = 'pokedex game selection'
         return manager
 

@@ -3,6 +3,10 @@ from sqlalchemy.orm import sessionmaker
 
 
 def check_data(game):
+    """
+    Функция, проверяющая, есть ли в принципе данные о покемонах в указанной игре.
+    Нужно переделать так, чтобы она искала базы через словарь по ключу games
+    """
     from databases import create_engine, table_names, GoBase
     engine = create_engine()
     GoBase.metadata.create_all(engine)
@@ -14,6 +18,10 @@ def check_data(game):
 
 
 def collect_data(game, prev_screen):
+    """
+    Функция, отвечающая за обновление базы данных в автоматическом режиме.
+    Ищет нужный скраппер по словарю и запускает его. В многопоточном режиме ещё и должна переключать на экран ожидания
+    """
     from databases import scrappers_dict
     from GUI import DataCollectorScreen
     scrapper = scrappers_dict[game]
@@ -23,13 +31,23 @@ def collect_data(game, prev_screen):
 
 
 def get_data_from_database(game):
-    from databases import data_getters
-    getter = data_getters[game]
+    """
+    Импортирует из текущего модуля словарь функций, получающих данные по всем покемонам.
+    Ищет в нём функцию, ответственную за данные по конкретной игре
+    Вызывает функцию и возвращает результат её работы
+    """
+    from databases import data_getters_dict
+    getter = data_getters_dict[game]
     return getter()
 
 
 def get_single_pokemon_data(game, pokemon):
-    from databases import pokemon_data_getters
-    getter = pokemon_data_getters[game]
+    """
+    Импортирует из текущего модуля словарь функций, получающих данные по одному покемону.
+    Ищет в нём функцию, ответственную за данные по конкретной игре
+    Вызывает функцию и возвращает результат её работы
+    """
+    from databases import single_pokemon_data_getters
+    getter = single_pokemon_data_getters[game]
     return getter(pokemon)
 

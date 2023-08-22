@@ -7,6 +7,9 @@ from utils import search_by_name_go
 
 
 class TypeFilter(Spinner):
+    """
+    Раскрывающийся список с типами покемонов
+    """
     from utils import TYPE_DICT
 
     types = []
@@ -21,6 +24,9 @@ class TypeFilter(Spinner):
 
 
 class TypeExcluder(GridLayout):
+    """
+    Область меню, отвечающая за спецификацию фильтрации по типу - исключение первого типа или второго
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(Label(text="Только первый", size_hint_y=None, height=44))
@@ -33,6 +39,10 @@ class TypeExcluder(GridLayout):
         self.second_selector.bind(active=self.active)
 
     def active(self, checkbox, value):
+        """
+        Метод, отвечающий за то, чтобы нельзя было выбрать исключение и первого, и второго типов, но можно было не
+        исключать ни один
+        """
         if value:
             if checkbox == self.first_selector:
                 self.second_selector.active = False
@@ -41,8 +51,15 @@ class TypeExcluder(GridLayout):
 
 
 class GoFilters(DropDown):
+    """
+    Базовый класс фильтров для Pokemon Go
+    """
 
     def filter(self):
+        """Метод, обрабатывающий все выбранные пользователем опции и передающий их в качестве аргументов функции-фильтру
+        Получает новые данные от функции-фильтра и посылает их в функцию родительского окна, ответственную за
+        обновление сетки покедекса
+        """
         type_1 = self.ids['type_1'].text
         type_2 = self.ids['type_2'].text
         if type_1 == 'Выберите тип':

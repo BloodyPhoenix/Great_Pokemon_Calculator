@@ -1,8 +1,9 @@
+"""
+Модуль, отвечающий за расчёт взаимодействия типов покемонов - их слабостей, сопротивлений, иммунитетов и так далее.
+"""
 
 
-
-class PokemonType():
-
+class PokemonType:
     def __init__(self, name: str, weaknesses: list, resists: list, immunite: list, effectiveness: list,
                  not_effectiveness: list, no_damage: list):
         self.name = name
@@ -100,6 +101,11 @@ type_chart = {
 
 
 def calculate_resists(type_1: str, type_2: str):
+    """
+    Высчитывает слабости, сопротивления и иммунитеты покемона на основе его типов, переданных в параметрах.
+    Возвращает словарь. В данный момент не делает различия между одинарными и двойными сопротивлениями и слабостями.
+    :return:
+    """
     if len(type_2) == 0:
         type_1 = type_chart[type_1]
         properties = {'resists': [type_1.resists], 'immunite': [type_1.immunite], 'weaknesses': [type_1.weaknesses]}
