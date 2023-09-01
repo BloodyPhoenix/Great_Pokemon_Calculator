@@ -1,0 +1,52 @@
+<SelectUpdateMethod>:
+    Widget:
+        Label:
+            text: "Выберите способ обновления"
+            center_x: root.width / 2
+            center_y: root.height * 0.9
+            font_size: 36
+        Button:
+            text: "Автоматическое обновление"
+            size: 500, 75
+            center_x: root.width / 2
+            center_y: root.height * 0.65
+            font_size: 24
+            on_release: root.update()
+        Button:
+            text: "Добавление покемона"
+            size: 500, 75
+            center_x: root.width / 2
+            center_y: root.height * 0.5
+            font_size: 24
+            on_release: root.add_pokemon()
+        Button:
+            text: "Добавление движения"
+            size: 500, 75
+            center_x: root.width / 2
+            center_y: root.height * 0.35
+            font_size: 24
+            on_release: root.add_move()
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Выбор игры"
+            on_release: root.game_selection()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Покедекс"
+            on_release: root.pokedex()

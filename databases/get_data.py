@@ -12,8 +12,11 @@ def check_data(game):
     GoBase.metadata.create_all(engine)
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     db = local_session()
-    if db.query(table_names[f'{game}']).first():
-        return True
+    try:
+        if db.query(table_names[f'{game}']).first():
+            return True
+    except KeyError:
+        return False
     return False
 
 

@@ -148,17 +148,10 @@ class Pokedex(Screen):
         self.add_widget(self.grid)
 
     def update(self):
-        """
-        Автоматическое обновление базы данных с помощью скраппера
-        """
-        try:
-            collect_data(self.game, self)
-        except KeyError:
-            popup = Popup(title="Не найдена функция",
-                          content=Label(text='Не найдена функция сбора данных для этой игры'),
-                          size_hint=(None, None), size=(400, 400)
-                          )
-            popup.open()
+        screen_name = f'{self.game} choose update'
+        new_screen = SelectUpdateMethod(name=screen_name, game=self.game)
+        self.manager.add_widget(new_screen)
+        self.manager.current = screen_name
 
     def to_main(self):
         """
@@ -212,6 +205,7 @@ class NoData(Screen):
     Экран, который возникает, если нет данных по какой-то игре. Методы аналогичны классу Pokedex, но их не столько,
     чтобы усложнять иерархию наследования
     """
+    # TODO Переписать kv-шник для этого экрана! Разнести кнопку ручного добавления на две и связать с методами
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
         self.game = game
@@ -223,6 +217,7 @@ class NoData(Screen):
         self.manager.current = 'pokedex game selection'
 
     def collect_data(self):
+        """Метод для автоматического обновления данных"""
         try:
             collect_data(self.game, self)
         except KeyError:
@@ -232,8 +227,50 @@ class NoData(Screen):
                           )
             popup.open()
 
-    def input_data(self):
+    def add_pokemon(self):
+        """Переводит на экран ручного добавления покемона"""
         pass
 
+    def add_move(self):
+        """Переводит на экран ручного добавления движения"""
+        pass
+
+
+class SelectUpdateMethod(Screen):
+    """
+    Экран, на котором выбирается метод обновления. Методы частично пересекаются с главным экраном покедекса и
+    экраном, сообщающим об отсутствии данных по этой игре
+    """
+    def __init__(self, game, **kwargs):
+        super().__init__(**kwargs)
+        self.game = game
+
+    def to_main(self):
+        self.manager.current = 'main screen'
+
+    def game_selection(self):
+        self.manager.current = 'pokedex game selection'
+
+    def pokedex(self):
+        self.manager.current = f'{self.game} pokedex'
+
+    def add_pokemon(self):
+        """Переводит на экран ручного добавления покемона"""
+        pass
+
+    def add_move(self):
+        """Переводит на экран ручного добавления движения"""
+        pass
+
+    def collect_data(self):
+        """Метод для автоматического обновления данных"""
+        try:
+            collect_data(self.game, self)
+        except KeyError:
+            popup = Popup(title="Не найдена функция",
+                          content=Label(text='Не найдена функция сбора данных для этой игры'),
+                          size_hint=(None, None), size=(400, 400)
+                          )
+            popup.open()
 
 
