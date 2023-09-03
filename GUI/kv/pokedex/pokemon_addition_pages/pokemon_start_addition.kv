@@ -1,0 +1,66 @@
+<PokemonStartAddition>:
+    main_properties_grid: main_properties_grid
+    Widget:
+        GridLayout:
+            id: main_properties_grid
+            top: root.height * 0.8
+            cols: 2
+            rows: 6
+            col_default_width: 300
+            row_default_height: 50
+            Label:
+                text: "Изображение"
+                font_size: 24
+            Button:
+                id: image_button
+                text: "Выбрать изображение"
+                on_release: root.image_selector.open(self)
+            Label:
+                text: "Номер"
+                font_size: 24
+            TextInput:
+                id: number
+                font_size: 24
+            Label:
+                text: "Название вида"
+                font_size: 24
+            TextInput:
+                id: species_name
+                font_size: 24
+            Label:
+                text: "Название формы"
+                font_size: 24
+            TextInput:
+                id: form_name
+                font_size: 24
+        Button:
+            center_y: 150
+            center_x: root.center_x
+            font_size: 24
+            size: 300, 70
+            text: "Продолжить"
+            on_release: root.proceed()
+        Button:
+            id: pokedex
+            center_y: 75
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 75
+            text: "Покедекс"
+            on_release: root.pokedex()
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Выбор игры"
+            on_release: root.game_selection()

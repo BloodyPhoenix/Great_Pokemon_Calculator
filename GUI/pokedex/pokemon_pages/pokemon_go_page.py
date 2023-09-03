@@ -110,7 +110,7 @@ class ResistsGrid(GridLayout):
             resists_counter += 1
             if resists_counter % 3 == 0:
                 string = ', '.join(string)
-                self.resists += string+'\n'
+                self.resists += string + '\n'
                 string = []
         self.weaknesses = ''
         string = []
@@ -120,10 +120,9 @@ class ResistsGrid(GridLayout):
             weaknesses_counter += 1
             if weaknesses_counter % 3 == 0:
                 string = ', '.join(string)
-                self.weaknesses += string+'\n'
+                self.weaknesses += string + '\n'
                 string = []
         self.immunite = ', '.join(data['immunite'])
-
 
 
 class GoDataGrid(GridLayout):

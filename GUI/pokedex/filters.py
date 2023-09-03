@@ -2,25 +2,20 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.dropdown import DropDown
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.uix.spinner import Spinner
-from utils import search_by_name_go
+from utils import search_by_name_go, TypeSelector
 
 
-class TypeFilter(Spinner):
+class TypeFilter(TypeSelector):
     """
     Раскрывающийся список с типами покемонов
     """
-    from utils import TYPE_DICT
-
-    types = []
-    for pokemon_type in TYPE_DICT.keys():
-        types.append(pokemon_type)
-    types.append("Любой")
-    types.append("Нет")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.values = TypeFilter.types
+        self.values = TypeSelector.types
+        self.values.append("Любой")
+        self.values.append("Нет")
+
 
 
 class TypeExcluder(GridLayout):

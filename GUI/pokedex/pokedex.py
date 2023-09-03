@@ -256,7 +256,11 @@ class SelectUpdateMethod(Screen):
 
     def add_pokemon(self):
         """Переводит на экран ручного добавления покемона"""
-        pass
+        from .pokemon_addition_pages import PokemonStartAddition
+        screen_name = 'Pokemon Adder'
+        addition_screen = PokemonStartAddition(name=screen_name, game=self.game)
+        self.manager.add_widget(addition_screen)
+        self.manager.current = screen_name
 
     def add_move(self):
         """Переводит на экран ручного добавления движения"""
