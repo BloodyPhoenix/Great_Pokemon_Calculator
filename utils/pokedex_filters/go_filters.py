@@ -3,7 +3,7 @@ from sqlalchemy.sql.operators import and_
 
 
 def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_first=False, only_second=False,
-                   monotype=False, both_types=False, exclude_no_moves=False, no_legends=False,
+                   monotype=False, both_types=False, exclude_no_moves=False, cp_limit=False, no_legends=False,
                    no_mythics=False, no_megas=False, ordering='pokedex', desc=True):
     """
     Фильтр, возвращающий список покемонов по заданному критерию. В первой части функции формирует требования к типу или
@@ -18,13 +18,14 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     :param both_types: если True, ищет покемонов, у которых строго заданное сочетание типов. Например, сочетание
     flying|dragon вернёт только линеку Ноиверна, но не Драгонайта или Саламенса, так как у тех сочетание dragon/flying
     :param exclude_no_moves: не учитывает покемонов, у которых нет атак, соответствующих первому заданному типу
+    :param cp_limit: позволяет установить ограничение по СР для поиска покемонов в соответствии с лимитами лиг
     :param no_legends: если True, исключает из поиска легендарных покемонов
     :param no_mythics: если True, исключает из поиска мифических покемонов
     :param no_megas: если True, исключает из поиска мегаэволюции
     :param ordering: указывает, по какому критерию сортировать покемонов - по номеру покедекса, названию или боевой силе
     :param desc: если True, возвращает покемонов в порядке убывания по критерию, заданному переменной ordering;
     В противном случае возвращает в порядке возрастания по тому же критерию
-    :return:
+    :return: результат поиска
     """
     from databases import create_engine, GoPokemon, FastMove, ChargeMove
     types_selection = (GoPokemon.type_1 is not None)
@@ -44,6 +45,10 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
                          GoPokemon.charge_moves.any(ChargeMove.type == pokemon_type_1))
     else:
         exclude_moves = (GoPokemon.fast_moves is not None)
+    if cp_limit:
+        max_cp = GoPokemon.max_cp_40 <= cp_limit
+    else:
+        max_cp = GoPokemon.max_cp_40 > 0
     if no_legends:
         options.append((GoPokemon.legendary, False))
     if no_mythics:
@@ -62,9 +67,9 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     if options:
         result = session.query(GoPokemon).where(
                 types_selection & exclude_moves & and_(*(option[0] == option[1] for option in options))
-            )
+            ).filter(max_cp)
     else:
-        result = session.query(GoPokemon).where(types_selection & exclude_moves)
+        result = session.query(GoPokemon).where(types_selection & exclude_moves).filter(max_cp)
     if desc:
         return result.order_by(ordering.desc())
     else:

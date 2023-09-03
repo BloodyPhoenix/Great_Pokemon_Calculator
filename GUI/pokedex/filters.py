@@ -68,7 +68,8 @@ class GoFilters(DropDown):
             type_2 = "Любой"
         params = {'pokemon_type_1': type_1, 'pokemon_type_2': type_2, 'all_types': True, 'only_first': False,
                   'only_second': False, 'monotype': False, 'both_types': False, 'exclude_no_moves': False,
-                  'no_legends': False, 'no_mythics': False, 'no_megas': False, 'ordering': 'pokedex', 'desc': True}
+                  'cp_limit': False, 'no_legends': False, 'no_mythics': False, 'no_megas': False, 'ordering': 'pokedex',
+                  'desc': True}
         from utils import get_pokemon_go
         if type_2 == "Нет":
             params['all_types'] = False
@@ -83,6 +84,8 @@ class GoFilters(DropDown):
             params['all_types'] = False
         if type_1 != 'Любой' and type_2 != "Любой" and type_1 != 'Нет' and type_2 != "Нет":
             params['both_types'] = True
+        if self.ids['cp_limit'].text != 'Без ограничений':
+            params['cp_limit'] = int(self.ids['cp_limit'].text)
         if self.ids['asc_or_desc'].text == "По возрастанию":
             params['desc'] = False
         else:
