@@ -1,10 +1,21 @@
 import os
-
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
+from utils import TypeSelector
+
+
+class SecondTypeSelector(TypeSelector):
+    """Класс для выбора второго типа при ручном создании покемона"""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.values = TypeSelector.types
+        self.values.append("Нет")
 
 
 class ImageSelector(Popup):
+    """Класс для загрузки изображения при ручном создании покемона. Загрузка производится строго из директории
+    new_images корневой папки приложения"""
 
     def __init__(self, button: Button, parent_window, **kwargs):
         super().__init__(**kwargs)
@@ -31,4 +42,3 @@ class ImageSelector(Popup):
         self.button.text = path.split('/')[-1]
         self.parent_window.image_pass = path
         self.dismiss()
-

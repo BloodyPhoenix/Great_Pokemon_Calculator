@@ -4,11 +4,12 @@ from kivy.uix.screenmanager import Screen
 
 
 class PokemonStartAddition(Screen):
+    """Класс для начала создания покемона. Поскольку тут ещё нет параметров, специфичных для конкретных игр,
+    используется как отправная точка для создания покемона с нуля"""
 
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
-        from .image_selector import ImageSelector
-        from GUI.pokedex.pokemon_addition_pages import SecondTypeSelector
+        from .selectors import ImageSelector, SecondTypeSelector
         from utils import TypeSelector
         self.game = game
         self.image_pass = ''
@@ -24,7 +25,6 @@ class PokemonStartAddition(Screen):
         """
         Метод, который проверяет корректность введённых значений, и если они не корректны, выдаёт окно ошибки.
         Если ошибок нет, переводит на следующее окно
-        :return:
         """
         mistake = ''
         if len(self.image_pass) == 0:

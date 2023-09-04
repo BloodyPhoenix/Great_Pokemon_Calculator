@@ -1,6 +1,5 @@
-from .image_selector import ImageSelector
+from .selectors import ImageSelector, SecondTypeSelector
 from .pokemon_start_addition import PokemonStartAddition
-from .second_type_selector import SecondTypeSelector
 
 
 pokemon_adders = {'Pokemon Go': None}
