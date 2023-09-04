@@ -17,11 +17,11 @@ class TypeFilter(TypeSelector):
         self.values.append("Нет")
 
 
-
 class TypeExcluder(GridLayout):
     """
     Область меню, отвечающая за спецификацию фильтрации по типу - исключение первого типа или второго
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(Label(text="Только первый", size_hint_y=None, height=44))
@@ -93,6 +93,14 @@ class GoFilters(DropDown):
             params['ordering'] = 'CP'
         if self.ids['no_stab'].active:
             params['exclude_no_moves'] = True
+        if self.ids['no_mythics'].active:
+            params['no_mythics'] = True
+        if self.ids['no_legends'].active:
+            params['no_legends'] = True
+        if self.ids['no_ub_paradox'].active:
+            params['no_ub_paradox'] = True
+        if self.ids['no_megas'].active:
+            params['no_megas'] = True
         result = get_pokemon_go(**params)
         manager = None
         for child in self.parent.children:

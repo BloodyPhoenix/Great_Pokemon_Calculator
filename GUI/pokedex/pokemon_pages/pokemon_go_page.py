@@ -52,7 +52,7 @@ class MovesSection(GridLayout):
 
 class BaseData(GridLayout):
     def __init__(self, pokemon_image, pokemon_number, pokemon_species, pokemon_form, pokemon_type_1, pokemon_type_2,
-                 **kwargs):
+                 rarity, **kwargs):
         super().__init__(**kwargs)
         self.pokemon_image = pokemon_image
         self.pokemon_number = pokemon_number
@@ -63,6 +63,7 @@ class BaseData(GridLayout):
             self.pokemon_type_1 = f'Первый тип: {pokemon_type_1}'
         else:
             self.pokemon_type_1 = f'Тип: {pokemon_type_1}'
+        self.pokemon_rarity = rarity
 
 
 class StatsGrid(GridLayout):
@@ -135,13 +136,25 @@ class GoDataGrid(GridLayout):
         charge_moves_amount = len(data.charge_moves)
         type_1 = data.type_1
         type_2 = self.get_type_2(data)
+        rarity = "Редокость: "
+        if data.mega:
+            rarity += "мега-эволюция"
+        elif data.legendary:
+            rarity += "легендарный"
+        elif data.mythic:
+            rarity += "мифический"
+        elif data.ub_paradox:
+            rarity += "УЧ/Парадокс"
+        else:
+            rarity += "обычный"
         base_data = BaseData(
             pokemon_image=data.picture_link,
             pokemon_number=data.pokedex_number,
             pokemon_species=data.species_name,
             pokemon_form=data.form_name,
             pokemon_type_1=type_1,
-            pokemon_type_2=type_2
+            pokemon_type_2=type_2,
+            rarity=rarity
         )
         self.scroll_box.add_widget(base_data)
         resists_data = calculate_resists(type_1, type_2.split()[-1])

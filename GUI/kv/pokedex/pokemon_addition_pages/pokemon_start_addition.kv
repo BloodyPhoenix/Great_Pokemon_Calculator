@@ -1,9 +1,58 @@
+<SecondTypeSelector>:
+    text: "Выберите тип"
+    values: root.values
+
+
+<ImageSelector>:
+    size_hint: 0.8, 0.8
+    title: "Выбор изображения"
+    pictures_dir: '/'
+    Widget:
+        size_hint_y: None
+        BoxLayout:
+            center_x: root.center_x
+            orientation: 'vertical'
+            size_hint_y: None
+            size_hint_x: None
+            width: root.width
+            padding: [0, 0, 0, 100]
+            Image:
+                size_hint_y: None
+                height: root.height * 0.2
+                width: 350
+                id: selected_image
+                source: ''
+            FileChooserIconView:
+                height: root.height * 0.4
+                width: root.width
+                size_hint_y: None
+                id: image_chooser
+                rootpath: root.pictures_dir
+                filters: ['*.png']
+                on_selection: root.image_selected(image_chooser.selection)
+        Button:
+            text: "Принять"
+            font_size: 24
+            on_release: root.accept()
+            center_x: root.center_x
+            center_y: 100
+            size: 500, 75
+
+
+<PokemonRarity>:
+    size_hint_y: None
+    cols: 4
+    rows: 2
+
+
+
 <PokemonStartAddition>:
     main_properties_grid: main_properties_grid
+    pokemon_rarity: pokemon_rarity
     Widget:
         GridLayout:
             id: main_properties_grid
-            top: root.height * 0.8
+            top: root.height * 0.95
             cols: 2
             rows: 6
             col_default_width: 300
@@ -33,6 +82,11 @@
             TextInput:
                 id: form_name
                 font_size: 24
+        PokemonRarity:
+            id: pokemon_rarity
+            size_hint_y: None
+            center_x: root.width * 0.45
+            center_y: 225
         Button:
             center_y: 150
             center_x: root.center_x
@@ -64,3 +118,40 @@
             size: 200, 75
             text: "Выбор игры"
             on_release: root.game_selection()
+
+
+<FirstStepGrid>:
+    rows: 1
+    cols: 2
+    data: {}
+    size_hint_y: None
+    Image:
+        source: root.data['image_pass']
+    GridLayout:
+        cols: 1
+        rows: 5
+        Label:
+            size: self.texture_size
+            text: root.data['number']
+            halign: 'left'
+        Label:
+            size: self.texture_size
+            text: root.data['species_name']
+            halign: 'left'
+        Label:
+            size: self.texture_size
+            text: root.data['form_name']
+            halign: 'left'
+        Label:
+            size: self.texture_size
+            text: root.data['type_1']
+            halign: 'left'
+        Label:
+            size: self.texture_size
+            text: root.data['type_2']
+            halign: 'left'
+        Label:
+            size: self.texture_size
+            text: root.data['rarity']
+            halign: 'left'
+

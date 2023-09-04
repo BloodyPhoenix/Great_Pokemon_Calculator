@@ -6,8 +6,7 @@
 <TypeExcluder>:
     size_hint_y: None
     cols: 2
-    rows: 2
-
+    rows: 4
 
 
 <GoFilters>:
@@ -82,38 +81,42 @@
             height: 32
             text: "По убыванию"
             values: 'По убыванию', "По возрастанию"
-    Label:
-        text: "Дополнительные опции"
-        size_hint_y: None
-        height: 44
     GridLayout:
         size_hint_y: None
         cols: 2
-        rows: 4
+        rows: 5
+        row_default_height: 24
+        row_force_default: True
         Label:
             size_hint_y: None
-            height: 24
+            text: "Только со СТАБ-ами"
+        CheckBox:
+            size_hint_y: None
+            id: no_stab
+        Label:
+            size_hint_y: None
             text: "Исключить мифических"
         CheckBox:
+            size_hint_y: None
             id: no_mythics
         Label:
             size_hint_y: None
-            height: 24
             text: "Исключить легендарных"
         CheckBox:
+            size_hint_y: None
             id: no_legends
         Label:
             size_hint_y: None
-            height: 24
-            text: "Исключить меги"
+            text: "Исключить УЧ/парадоксы"
         CheckBox:
-            id: no_megas
+            size_hint_y: None
+            id: no_ub_paradox
         Label:
             size_hint_y: None
-            height: 24
-            text: "Исключить без СТАБ-ов"
+            text: "Исключить меги"
         CheckBox:
-            id: no_stab
+            size_hint_y: None
+            id: no_megas
     Button:
         id: apply
         text: "Применить"

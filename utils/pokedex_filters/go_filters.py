@@ -4,7 +4,7 @@ from sqlalchemy.sql.operators import and_
 
 def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_first=False, only_second=False,
                    monotype=False, both_types=False, exclude_no_moves=False, cp_limit=False, no_legends=False,
-                   no_mythics=False, no_megas=False, ordering='pokedex', desc=True):
+                   no_mythics=False, no_megas=False, no_ub_paradox=False, ordering='pokedex', desc=True):
     """
     Фильтр, возвращающий список покемонов по заданному критерию. В первой части функции формирует требования к типу или
     типам покемона на основе заданных условий. Далее формирует требования к возможным атакам, потом - к статусу покемона
@@ -22,6 +22,7 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     :param no_legends: если True, исключает из поиска легендарных покемонов
     :param no_mythics: если True, исключает из поиска мифических покемонов
     :param no_megas: если True, исключает из поиска мегаэволюции
+    :param no_ub_paradox: если True, исключает из поиска парадоксы и улльтачудовищ
     :param ordering: указывает, по какому критерию сортировать покемонов - по номеру покедекса, названию или боевой силе
     :param desc: если True, возвращает покемонов в порядке убывания по критерию, заданному переменной ordering;
     В противном случае возвращает в порядке возрастания по тому же критерию
@@ -55,6 +56,8 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
         options.append((GoPokemon.mythic, False))
     if no_megas:
         options.append((GoPokemon.mega, False))
+    if no_ub_paradox:
+        options.append((GoPokemon.ub_paradox, False))
     if ordering == 'pokedex':
         ordering = GoPokemon.pokedex_number
     if ordering == 'CP':

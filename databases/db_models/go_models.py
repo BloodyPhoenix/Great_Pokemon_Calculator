@@ -5,8 +5,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, Boolean
 
 
-
-
 class Base(DeclarativeBase):
     pass
 
@@ -17,7 +15,6 @@ FastMoveDetail = Table(
     Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_fast.id'), primary_key=True)
 )
-
 
 ChargeMoveDetail = Table(
     'ChargeMoveDetail',
@@ -85,6 +82,7 @@ class Pokemon(Base):
     legendary: Mapped[bool] = mapped_column(Boolean, default=False)
     mythic: Mapped[bool] = mapped_column(Boolean, default=False)
     mega: Mapped[bool] = mapped_column(Boolean, default=False)
+    ub_paradox: Mapped[bool] = mapped_column(Boolean, default=False)
     base_hp: Mapped[int] = mapped_column(Integer)
     max_hp_40: Mapped[int] = mapped_column(Integer)
     max_hp_50: Mapped[int] = mapped_column(Integer)
@@ -101,6 +99,7 @@ class Pokemon(Base):
 
     @classmethod
     def upsert(cls, data, session, image_path, fast_moves, charge_moves):
+        #TODO Написать логику для изменения статуса (мега, легенда, мифик, УЧ/парадокс)
         from utils import GO_CP_MULTIPLIER_40, GO_CP_MULTIPLIER_50
         current_pokemon = session.query(cls).filter(cls.form_name == data['form_name']).first()
         if current_pokemon is None:
@@ -171,7 +170,6 @@ class Pokemon(Base):
                     session.add(move)
                     session.commit()
 
-
     def __str__(self):
         return f'''
 pokedex_number: {self.pokedex_number}
@@ -180,35 +178,34 @@ type 1: {self.type_1}
 type 2: {self.type_2}
 image link: {self.picture_link}'''
 
-
-# class MyPokemon(Base):
-#     __tablename__ = 'GO_my_pokemon'
-#     picture_link: Mapped[str] = mapped_column(String(150))
-#     pokedex_number: Mapped[str] = mapped_column(String(5))
-#     species_name: Mapped[str] = mapped_column(String(30))
-#     form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
-#     name: Mapped[str] = mapped_column(String(50))
-#     type_1: Mapped[str] = mapped_column(String(20))
-#     type_2: Mapped[Optional[str]] = mapped_column(String(20))
-#     legendary: Mapped[bool] = mapped_column(Boolean, default=False)
-#     mythic: Mapped[bool] = mapped_column(Boolean, default=False)
-#     mega: Mapped[bool] = mapped_column(Boolean, default=False)
-#     iv_hp: Mapped[int] = mapped_column(Integer)
-#     iv_attack: Mapped[int] = mapped_column(Integer)
-#     iv_defence: Mapped[int] = mapped_column(Integer)
-#     base_hp: Mapped[int] = mapped_column(Integer)
-#     max_hp_40: Mapped[int] = mapped_column(Integer)
-#     max_hp_50: Mapped[int] = mapped_column(Integer)
-#     base_attack: Mapped[int] = mapped_column(Integer)
-#     max_attack_40: Mapped[int] = mapped_column(Integer)
-#     max_attack_50: Mapped[int] = mapped_column(Integer)
-#     base_defence: Mapped[int] = mapped_column(Integer)
-#     max_defence_40: Mapped[int] = mapped_column(Integer)
-#     max_defence_50: Mapped[int] = mapped_column(Integer)
-#     max_cp_40: Mapped[int] = mapped_column(Integer)
-#     max_cp_50: Mapped[int] = mapped_column(Integer)
-#     fast_move_name: Mapped[int] = mapped_column(ForeignKey('GO_moves_fast.id'))
-#     fast_move: Mapped[FastMove] = relationship(back_populates="my_pokemon")
+    # class MyPokemon(Base):
+    #     __tablename__ = 'GO_my_pokemon'
+    #     picture_link: Mapped[str] = mapped_column(String(150))
+    #     pokedex_number: Mapped[str] = mapped_column(String(5))
+    #     species_name: Mapped[str] = mapped_column(String(30))
+    #     form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
+    #     name: Mapped[str] = mapped_column(String(50))
+    #     type_1: Mapped[str] = mapped_column(String(20))
+    #     type_2: Mapped[Optional[str]] = mapped_column(String(20))
+    #     legendary: Mapped[bool] = mapped_column(Boolean, default=False)
+    #     mythic: Mapped[bool] = mapped_column(Boolean, default=False)
+    #     mega: Mapped[bool] = mapped_column(Boolean, default=False)
+    #     iv_hp: Mapped[int] = mapped_column(Integer)
+    #     iv_attack: Mapped[int] = mapped_column(Integer)
+    #     iv_defence: Mapped[int] = mapped_column(Integer)
+    #     base_hp: Mapped[int] = mapped_column(Integer)
+    #     max_hp_40: Mapped[int] = mapped_column(Integer)
+    #     max_hp_50: Mapped[int] = mapped_column(Integer)
+    #     base_attack: Mapped[int] = mapped_column(Integer)
+    #     max_attack_40: Mapped[int] = mapped_column(Integer)
+    #     max_attack_50: Mapped[int] = mapped_column(Integer)
+    #     base_defence: Mapped[int] = mapped_column(Integer)
+    #     max_defence_40: Mapped[int] = mapped_column(Integer)
+    #     max_defence_50: Mapped[int] = mapped_column(Integer)
+    #     max_cp_40: Mapped[int] = mapped_column(Integer)
+    #     max_cp_50: Mapped[int] = mapped_column(Integer)
+    #     fast_move_name: Mapped[int] = mapped_column(ForeignKey('GO_moves_fast.id'))
+    #     fast_move: Mapped[FastMove] = relationship(back_populates="my_pokemon")
 
     def __str__(self):
         return f'''
@@ -217,7 +214,3 @@ image link: {self.picture_link}'''
     type 1: {self.type_1}
     type 2: {self.type_2}
     image link: {self.picture_link}'''
-
-
-
-
