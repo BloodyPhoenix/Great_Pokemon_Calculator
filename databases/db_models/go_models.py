@@ -100,7 +100,7 @@ class Pokemon(Base):
     @classmethod
     def upsert(cls, data, session, image_path, fast_moves, charge_moves):
         #TODO Написать логику для изменения статуса (мега, легенда, мифик, УЧ/парадокс)
-        from utils import GO_CP_MULTIPLIER_40, GO_CP_MULTIPLIER_50
+        from utils import count_cp_lvl_40, count_cp_lvl_50, count_stat_lvl_50, count_stat_lvl_40
         current_pokemon = session.query(cls).filter(cls.form_name == data['form_name']).first()
         if current_pokemon is None:
             pokemon = cls(
@@ -111,18 +111,16 @@ class Pokemon(Base):
                 type_1=data['type_1'],
                 type_2=data['type_2'],
                 base_hp=data['HP'],
-                max_hp_40=(data['HP'] + 15) * GO_CP_MULTIPLIER_40,
-                max_hp_50=(data['HP'] + 15) * GO_CP_MULTIPLIER_50,
+                max_hp_40=count_stat_lvl_40(data['HP']),
+                max_hp_50=count_stat_lvl_50(data['HP']),
                 base_attack=data['Attack'],
-                max_attack_40=(data['Attack'] + 15) * GO_CP_MULTIPLIER_40,
-                max_attack_50=(data['Attack'] + 15) * GO_CP_MULTIPLIER_50,
-                base_defence=data['Defense'],
-                max_defence_40=(data['Defense'] + 15) * GO_CP_MULTIPLIER_40,
-                max_defence_50=(data['Defense'] + 15) * GO_CP_MULTIPLIER_50,
-                max_cp_40=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                        GO_CP_MULTIPLIER_40 ** 2) / 10,
-                max_cp_50=(data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                        GO_CP_MULTIPLIER_50 ** 2) / 10,
+                max_attack_40=count_stat_lvl_40(data['Attack']),
+                max_attack_50=count_stat_lvl_50(data['Attack']),
+                base_defence=data['Defence'],
+                max_defence_40=count_stat_lvl_40(data['Defence']),
+                max_defence_50=count_stat_lvl_50(data['Defence']),
+                max_cp_40=count_cp_lvl_40(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15]),
+                max_cp_50=count_cp_lvl_50(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15])
             )
             for move in fast_moves:
                 pokemon.fast_moves.append(move)
@@ -138,18 +136,17 @@ class Pokemon(Base):
             current_pokemon.type_1 = data['type_1'],
             current_pokemon.type_2 = data['type_2'],
             current_pokemon.base_hp = data['HP'],
-            current_pokemon.max_hp_40 = (data['HP'] + 15) * GO_CP_MULTIPLIER_40,
-            current_pokemon.max_hp_50 = (data['HP'] + 15) * GO_CP_MULTIPLIER_50,
+            current_pokemon.max_hp_40 = count_stat_lvl_40(data['HP']),
+            current_pokemon.max_hp_50 = count_stat_lvl_50(data['HP']),
             current_pokemon.base_attack = data['Attack'],
-            current_pokemon.max_attack_40 = (data['Attack'] + 15) * GO_CP_MULTIPLIER_40,
-            current_pokemon.max_attack_50 = (data['Attack'] + 15) * GO_CP_MULTIPLIER_50,
-            current_pokemon.base_defence = data['Defense'],
-            current_pokemon.max_defence_40 = (data['Defense'] + 15) * GO_CP_MULTIPLIER_40,
-            current_pokemon.max_defence_50 = (data['Defense'] + 15) * GO_CP_MULTIPLIER_50,
-            current_pokemon.max_cp_40 = (data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                    GO_CP_MULTIPLIER_40 ** 2) / 10,
-            current_pokemon.max_cp_50 = (data['Attack'] + 15) * sqrt(data['Defense'] + 15) * sqrt(data['HP'] + 15) * (
-                    GO_CP_MULTIPLIER_50 ** 2) / 10
+            current_pokemon.max_attack_40 = count_stat_lvl_40(data['Attack']),
+            current_pokemon.max_attack_50 = count_stat_lvl_50(data['Attack']),
+            current_pokemon.base_defence = data['Defence'],
+            current_pokemon.max_defence_40 = count_stat_lvl_40(data['Defence']),
+            current_pokemon.max_defence_50 = count_stat_lvl_50(data['Defence']),
+            current_pokemon.max_cp_40 = count_cp_lvl_40(attack=[data['Attack'], 15], defence=[data['Defence'], 15],
+                                        hp=[data['HP'], 15]),
+            current_pokemon.max_cp_50 = count_cp_lvl_50(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15])
             session.commit()
             for move in fast_moves:
                 if move not in current_pokemon.fast_moves:

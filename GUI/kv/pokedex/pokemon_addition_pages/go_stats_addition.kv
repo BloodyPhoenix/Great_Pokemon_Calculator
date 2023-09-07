@@ -1,4 +1,50 @@
+<StatsAdditionLayout>:
+    base_hp: base_hp
+    base_attack: base_attack
+    base_defence: base_defence
+    orientation: 'horizontal'
+    size_hint: None, None
+    width: root.width
+    BoxLayout:
+        size_hint_y: None
+        orientation: 'vertical'
+        Label:
+            text: "Базовые параметры"
+            size_hint_y: None
+            height: 50
+        GridLayout:
+            size_hint_y: None
+            rows: 3
+            cols: 2
+            Label:
+                size_hint_y: None
+                text: "HP"
+            TextInput:
+                id: base_hp
+                size_hint_y: None
+            Label:
+                size_hint_y: None
+                text: "Атака"
+            TextInput:
+                id: base_attack
+                size_hint_y: None
+            Label:
+                size_hint_y: None
+                text: "Защита"
+            TextInput:
+                size_hint_y: None
+                id: base_defence
+
+
+
 <PokemonGoStatsAddition>:
+    main_layout: main_layout
     Widget:
         BoxLayout:
+            id: main_layout
             orientation: 'vertical'
+            size_hint_y: None
+            top: root.top
+            center_x: root.center_x
+            width: root.width
+

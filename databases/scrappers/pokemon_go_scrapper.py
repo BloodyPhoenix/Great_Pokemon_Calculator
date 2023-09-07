@@ -1,13 +1,10 @@
 import os
 import re
 import shutil
-from math import sqrt
-
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
 from sqlalchemy.orm import sessionmaker
 from kivy.uix.screenmanager import Screen
-from utils import GO_CP_MULTIPLIER_40, GO_CP_MULTIPLIER_50
 
 
 _POKEDEX_LINKS = ['https://serebii.net/pokemongo/gen1pokemon.shtml',
@@ -24,11 +21,11 @@ _POKEDEX_LINKS = ['https://serebii.net/pokemongo/gen1pokemon.shtml',
 
 
 def get_move_data(move_name: str):
-    '''
+    """
     a func that finds info about pokemon move by it's name
     :param move_name: a name of a move we need info about
     :return: full data about that move
-    '''
+    """
     from databases.scrappers import open_url
     url = open_url('https://serebii.net/pokemongo/moves.shtml')
     soup = BeautifulSoup(url.read().decode('cp1252'), features="html.parser")
@@ -70,11 +67,11 @@ def get_move_data(move_name: str):
 
 
 def get_image(pokemon_data: Tag):
-    '''
+    """
     A func that gets link to pokemon image
     :param pokemon_data: data where are we looking for image
     :return: a straight link to image
-    '''
+    """
     image = pokemon_data.find_all("img", {"src": re.compile("(pokemon)+")})
     pure_image = image[0].attrs["src"]
     pure_image = "https://serebii.net" + pure_image
@@ -82,12 +79,12 @@ def get_image(pokemon_data: Tag):
 
 
 def check_double(line, tags):
-    '''
+    """
     Checks if there is double info about pokemon, which is common in serebii.net tags
     :param line: a line we are checking
     :param tags: info we really need
     :return: modifies tags
-    '''
+    """
     if isinstance(line, Tag):
         line = line.getText().strip()
     if len(line) > 0:
@@ -99,12 +96,12 @@ def check_double(line, tags):
 
 
 def check_content(obj, content):
-    '''
+    """
     function that works with serenii.net stuctures to get info out of them. A recursive func
     :param obj: tag with pokemon info
     :param content: info about pokemon we already have.
     :return: Modidies content
-    '''
+    """
     if isinstance(obj, NavigableString):
         line = str(obj).strip()
         check_double(line, content)
@@ -118,11 +115,11 @@ def check_content(obj, content):
 
 
 def reformat_data(data: list):
-    '''
+    """
     reformats data from get_pokemon_data func from list to dict
     :param data: list of pokemon properties
     :return:
-    '''
+    """
     reformatted_data = {'image_link': data[0],
                         'number': data[1], 'species_name': data[2],
                         'form_name': data[3],
@@ -132,25 +129,25 @@ def reformat_data(data: list):
         reformatted_data['type_2'] = data[5]
         reformatted_data['HP'] = data[7]
         reformatted_data['Attack'] = data[9]
-        reformatted_data['Defense'] = data[11]
+        reformatted_data['Defence'] = data[11]
         reformatted_data['Max CP'] = data[13]
         reformatted_data['moves'] = data[16:]
     else:
         reformatted_data['type_2'] = None
         reformatted_data['HP'] = data[6]
         reformatted_data['Attack'] = data[8]
-        reformatted_data['Defense'] = data[10]
+        reformatted_data['Defence'] = data[10]
         reformatted_data['Max CP'] = data[12]
         reformatted_data['moves'] = data[15:]
     return reformatted_data
 
 
 def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
-    '''
+    """
     Gets and reformats data for a single pokemon.
     :param pokemon_data: dict with pokemon properties or a string that indicated that pokemon is not released yet
     :return:
-    '''
+    """
     image = get_image(pokemon_data)
     full_data = pokemon_data.parent.parent
     links = full_data.find_all('a', href=True)
@@ -162,7 +159,7 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
         form_name = name.text
     name = name.text.rstrip()
     form_name = form_name.rstrip()
-    proceed_screen.set_pokemon(name)
+    proceed_screen.current_pokemon = name
     content = [image, ]
     types = full_data.find_all("img", {"src": re.compile("(type)+")})
     for child in full_data.children:
@@ -182,11 +179,11 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
 
 
 def save_data(data: dict):
-    '''
+    """
     Saves pokemon data to Postgres DB
     :param data: a dictionary of pokemon params
     :return:
-    '''
+    """
     work_dir = os.path.abspath(os.curdir)
     base_dir = work_dir.split('/')
     while base_dir[-1] != 'ВПК':

@@ -123,35 +123,42 @@
 <FirstStepGrid>:
     rows: 1
     cols: 2
-    data: {}
+    image_pass: ''
+    number: ''
+    species_name: ''
+    form_name: ''
+    rarity: ''
+    type_1: ''
+    type_2: ''
     size_hint_y: None
+    width: root.width
     Image:
-        source: root.data['image_pass']
+        source: root.image_pass
     GridLayout:
         cols: 1
-        rows: 5
+        rows: 6
         Label:
             size: self.texture_size
-            text: root.data['number']
+            text: root.number
             halign: 'left'
         Label:
             size: self.texture_size
-            text: root.data['species_name']
+            text: root.species_name
             halign: 'left'
         Label:
             size: self.texture_size
-            text: root.data['form_name']
+            text: root.form_name
             halign: 'left'
         Label:
             size: self.texture_size
-            text: root.data['type_1']
+            text: root.type_1
             halign: 'left'
         Label:
             size: self.texture_size
-            text: root.data['type_2']
+            text: root.type_2
             halign: 'left'
         Label:
             size: self.texture_size
-            text: root.data['rarity']
+            text: root.rarity
             halign: 'left'
 

@@ -5,7 +5,6 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 
 from databases import get_single_pokemon_data
-from utils.formulas import round_stats
 
 
 class FastMoveInfo(DropDown):

@@ -3,13 +3,11 @@ from .formulas import go_stats
 from .type_chart import calculate_resists, type_chart
 from .type_selector import TypeSelector
 from .type_dict import TYPE_DICT
-
-GO_CP_MULTIPLIER_40 = 0.792803968
-GO_CP_MULTIPLIER_50 = 0.84529999
+from .formulas import count_cp_lvl_40, count_stat_lvl_50, count_cp_lvl_50, count_stat_lvl_40
 
 games = ['Pokemon HOME', 'Pokemon Go', 'Pokemon Red&Blue', 'Pokemon Yellow', 'Pokemon Gold&Silver',
          'Pokemon Scarlet&Violet']
 
-__all__ = ['games', 'TYPE_DICT', 'GO_CP_MULTIPLIER_50', 'GO_CP_MULTIPLIER_40', 'get_pokemon_go', 'go_stats',
-           'search_by_name_go', 'calculate_resists', 'type_chart', 'TYPE_DICT', 'GO_CP_MULTIPLIER_40',
-           'GO_CP_MULTIPLIER_50', 'TypeSelector']
+__all__ = ['games', 'TYPE_DICT', 'count_stat_lvl_50', 'count_cp_lvl_50', 'count_cp_lvl_40', 'count_stat_lvl_40',
+           'get_pokemon_go', 'go_stats', 'search_by_name_go', 'calculate_resists', 'type_chart', 'TYPE_DICT',
+           'TypeSelector']

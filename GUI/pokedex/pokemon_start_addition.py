@@ -4,10 +4,6 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 
-from GUI.pokedex.pokemon_addition_pages import PokemonGoStatsAddition
-
-pokemon_adders = {'Pokemon Go': PokemonGoStatsAddition}
-
 
 class PokemonStartAddition(Screen):
     """Класс для начала создания покемона. Поскольку тут ещё нет параметров, специфичных для конкретных игр,
@@ -15,7 +11,7 @@ class PokemonStartAddition(Screen):
 
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
-        from .selectors import ImageSelector, SecondTypeSelector
+        from .pokemon_addition_pages import ImageSelector, SecondTypeSelector
         from utils import TypeSelector
         self.game = game
         self.image_pass = ''
@@ -81,8 +77,10 @@ class PokemonStartAddition(Screen):
             'mythic': self.pokemon_rarity.mythic.active,
             'ub_paradox': self.pokemon_rarity.ub_paradox.active
         }
+        from .pokemon_addition_pages import pokemon_adders
         screen_name = f'{self.game} add pokemon'
-        new_screen = pokemon_adders[self.game]()
+        new_screen = pokemon_adders[self.game](name = screen_name, data=self.data,
+                                               first_step_grid=FirstStepGrid(data=self.data))
         self.manager.add_widget(new_screen)
         self.manager.current = screen_name
 
@@ -148,7 +146,23 @@ class FirstStepGrid(GridLayout):
 
     def __init__(self, data: dict, **kwargs):
         super().__init__(**kwargs)
-        self.data = data
+        self.image_pass = data['image_pass']
+        self.number = f"номер: #{data['number']}"
+        self.species_name = f"Вид: {data['species_name']}"
+        self.form_name = f"Форма: {data['form_name']}"
+        self.type_1 = f"Тип 1: {data['type_1']}"
+        self.type_2 = f"Тип 2: {data['type_2']}"
+        self.rarity = "Редкость: "
+        if data['mega']:
+            self.rarity += "мега-эволюция"
+        elif data['legendary']:
+            self.rarity += "легендарный"
+        elif data['mythic']:
+            self.rarity += "мифический"
+        elif data['ub_paradox']:
+            self.rarity += "УЧ/Парадокс"
+        else:
+            self.rarity += "обычный"
 
 
 

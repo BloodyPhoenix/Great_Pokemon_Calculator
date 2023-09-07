@@ -1,6 +1,8 @@
+from kivy.clock import Clock
 from kivy.properties import BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -192,12 +194,21 @@ class DataCollectorScreen(Screen):
     def __init__(self, game, **kwargs):
         super().__init__(**kwargs)
         self.game = game
+        self.current_pokemon = 'Подключение к сайту'
 
-    def set_pokemon(self, pokemon: str):
-        self.ids.current_pokemon.text = pokemon
+    def on_enter(self, *args):
+        super().on_enter(*args)
+        from databases import scrappers_dict
+        scrapper = scrappers_dict[self.game]
+        self.start_collection(scrapper)
 
     def start_collection(self, scrapper):
+        Clock.schedule_interval(callback=self.set_pokemon, timeout=0.5)
         scrapper(self)
+        Clock.unschedule(self.set_pokemon)
+
+    def set_pokemon(self):
+        self.ids.current_pokemon.text = self.current_pokemon
 
 
 class NoData(Screen):

@@ -25,12 +25,9 @@ def collect_data(game, prev_screen):
     Функция, отвечающая за обновление базы данных в автоматическом режиме.
     Ищет нужный скраппер по словарю и запускает его. В многопоточном режиме ещё и должна переключать на экран ожидания
     """
-    from databases import scrappers_dict
     from GUI import DataCollectorScreen
-    scrapper = scrappers_dict[game]
     proceed_screen = DataCollectorScreen(game=prev_screen.game, name='proceed screen')
     prev_screen.manager.switch_to(proceed_screen)
-    proceed_screen.start_collection(scrapper)
 
 
 def get_data_from_database(game):
