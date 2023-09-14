@@ -30,7 +30,7 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     """
     from databases import create_engine, GoPokemon, FastMove, ChargeMove
     types_selection = (GoPokemon.type_1 is not None)
-    options = []
+    options = {}
     if all_types:
         types_selection = (GoPokemon.type_1 == pokemon_type_1) | (GoPokemon.type_2 == pokemon_type_1)
     if only_first:
@@ -42,8 +42,15 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     if both_types:
         types_selection = (GoPokemon.type_1 == pokemon_type_1) & (GoPokemon.type_2 == pokemon_type_2)
     if exclude_no_moves:
-        exclude_moves = (GoPokemon.fast_moves.any(FastMove.type == pokemon_type_1) &
-                         GoPokemon.charge_moves.any(ChargeMove.type == pokemon_type_1))
+        if types_selection == (GoPokemon.type_1 is not None):
+            exclude_moves = (GoPokemon.fast_moves.any(FastMove.type == GoPokemon.type_1) &
+                             GoPokemon.charge_moves.any(ChargeMove.type == GoPokemon.type_1) |
+                             GoPokemon.fast_moves.any(FastMove.type == GoPokemon.type_2) &
+                             GoPokemon.charge_moves.any(ChargeMove.type == GoPokemon.type_2)
+                             )
+        else:
+            exclude_moves = (GoPokemon.fast_moves.any(FastMove.type == pokemon_type_1) &
+                             GoPokemon.charge_moves.any(ChargeMove.type == pokemon_type_1))
     else:
         exclude_moves = (GoPokemon.fast_moves is not None)
     if cp_limit:
@@ -51,13 +58,13 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     else:
         max_cp = GoPokemon.max_cp_40 > 0
     if no_legends:
-        options.append((GoPokemon.legendary, False))
+        options['legendary'] = 0
     if no_mythics:
-        options.append((GoPokemon.mythic, False))
+        options['mythic'] = 0
     if no_megas:
-        options.append((GoPokemon.mega, False))
+        options['mega'] = 0
     if no_ub_paradox:
-        options.append((GoPokemon.ub_paradox, False))
+        options['ub_paradox'] = 0
     if ordering == 'pokedex':
         ordering = GoPokemon.pokedex_number
     if ordering == 'CP':
@@ -67,12 +74,7 @@ def get_pokemon(pokemon_type_1: str, pokemon_type_2: str, all_types=True, only_f
     engine = create_engine()
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     session = local_session()
-    if options:
-        result = session.query(GoPokemon).where(
-                types_selection & exclude_moves & and_(*(option[0] == option[1] for option in options))
-            ).filter(max_cp)
-    else:
-        result = session.query(GoPokemon).where(types_selection & exclude_moves).filter(max_cp)
+    result = session.query(GoPokemon).where(types_selection, exclude_moves, max_cp).filter_by(**options)
     if desc:
         return result.order_by(ordering.desc())
     else:

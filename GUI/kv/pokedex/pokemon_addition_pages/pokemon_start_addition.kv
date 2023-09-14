@@ -130,6 +130,7 @@
     rarity: ''
     type_1: ''
     type_2: ''
+    mega: mega
     size_hint_y: None
     width: root.width
     Image:
@@ -161,4 +162,18 @@
             size: self.texture_size
             text: root.rarity
             halign: 'left'
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: self.minimum_height
+        center_x: root.center_x
+        Label:
+            text: "Мега-эволюция"
+            font_size: 24
+            size_hint_y: None
+        CheckBox:
+            id: mega
+            size_hint_y: None
+
+
 

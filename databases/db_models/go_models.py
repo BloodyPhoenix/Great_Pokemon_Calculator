@@ -1,8 +1,7 @@
-from math import sqrt
 from typing import Optional, List
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, InstrumentedAttribute
-from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, Boolean
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, CheckConstraint
 
 
 class Base(DeclarativeBase):
@@ -79,10 +78,10 @@ class Pokemon(Base):
     form_name: Mapped[str] = mapped_column(String(50), primary_key=True)
     type_1: Mapped[str] = mapped_column(String(20))
     type_2: Mapped[Optional[str]] = mapped_column(String(20))
-    legendary: Mapped[bool] = mapped_column(Boolean, default=False)
-    mythic: Mapped[bool] = mapped_column(Boolean, default=False)
-    mega: Mapped[bool] = mapped_column(Boolean, default=False)
-    ub_paradox: Mapped[bool] = mapped_column(Boolean, default=False)
+    legendary: Mapped[int] = mapped_column(default=0)
+    mythic: Mapped[int] = mapped_column(default=0)
+    mega: Mapped[int] = mapped_column(default=0)
+    ub_paradox: Mapped[int] = mapped_column(default=0)
     base_hp: Mapped[int] = mapped_column(Integer)
     max_hp_40: Mapped[int] = mapped_column(Integer)
     max_hp_50: Mapped[int] = mapped_column(Integer)
@@ -99,7 +98,6 @@ class Pokemon(Base):
 
     @classmethod
     def upsert(cls, data, session, image_path, fast_moves, charge_moves):
-        #TODO Написать логику для изменения статуса (мега, легенда, мифик, УЧ/парадокс)
         from utils import count_cp_lvl_40, count_cp_lvl_50, count_stat_lvl_50, count_stat_lvl_40
         current_pokemon = session.query(cls).filter(cls.form_name == data['form_name']).first()
         if current_pokemon is None:
@@ -120,7 +118,11 @@ class Pokemon(Base):
                 max_defence_40=count_stat_lvl_40(data['Defence']),
                 max_defence_50=count_stat_lvl_50(data['Defence']),
                 max_cp_40=count_cp_lvl_40(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15]),
-                max_cp_50=count_cp_lvl_50(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15])
+                max_cp_50=count_cp_lvl_50(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15]),
+                legendary=data['legendary'],
+                mega=data['mega'],
+                mythic=data['mythic'],
+                ub_paradox=data['ub_paradox']
             )
             for move in fast_moves:
                 pokemon.fast_moves.append(move)
@@ -147,6 +149,10 @@ class Pokemon(Base):
             current_pokemon.max_cp_40 = count_cp_lvl_40(attack=[data['Attack'], 15], defence=[data['Defence'], 15],
                                         hp=[data['HP'], 15]),
             current_pokemon.max_cp_50 = count_cp_lvl_50(attack=[data['Attack'], 15], defence=[data['Defence'], 15], hp=[data['HP'], 15])
+            current_pokemon.legendary = data['legendary'],
+            current_pokemon.mega = data['mega'],
+            current_pokemon.mythic = data['mythic'],
+            current_pokemon.ub_paradox = data['ub_paradox']
             session.commit()
             for move in fast_moves:
                 if move not in current_pokemon.fast_moves:

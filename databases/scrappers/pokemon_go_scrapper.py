@@ -248,6 +248,13 @@ def save_data(data: dict):
                 db.add(charge_move)
                 db.flush()
                 charge_moves.append(charge_move)
+    data['mythic'] = 0
+    data['legendary'] = 0
+    data['ub_paradox'] = 0
+    if 'Mega ' in data['form_name']:
+        data['mega'] = 1
+    else:
+        data['mega'] = 0
     GoPokemon.upsert(data, db, image_path, fast_moves, charge_moves)
     db.close()
 

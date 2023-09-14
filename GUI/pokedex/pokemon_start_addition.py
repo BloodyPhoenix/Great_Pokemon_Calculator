@@ -99,45 +99,22 @@ class PokemonRarity(GridLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_widget(Label(text="Мега-эволюция", size_hint_y=None, height=44, size_hint_x=None))
-        self.mega = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44)
-        self.add_widget(self.mega)
+        self.add_widget(Label(text="Обычный", size_hint_y=None, height=44, size_hint_x=None))
+        self.common = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
+        self.add_widget(self.common)
         self.mega.bind(active=self.active)
         self.add_widget(Label(text="Легендарный", size_hint_y=None, height=44, size_hint_x=None))
-        self.legendary = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44)
+        self.legendary = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.legendary)
         self.legendary.bind(active=self.active)
         self.add_widget(Label(text="Мифический", size_hint_y=None, height=44, size_hint_x=None))
-        self.mythic = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44)
+        self.mythic = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.mythic)
         self.mythic.bind(active=self.active)
         self.add_widget(Label(text="УЧ/Парадокс", size_hint_y=None, height=44, size_hint_x=None))
-        self.ub_paradox = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44)
+        self.ub_paradox = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.ub_paradox)
         self.ub_paradox.bind(active=self.active)
-
-    def active(self, checkbox, value):
-        """
-        Метод, отвечающий за то, чтобы нельзя было выбрать сразу несколько типов редкости, но можно было не выбрать ни
-        один
-        """
-        if value:
-            if checkbox == self.mega:
-                self.legendary.active = False
-                self.mythic.active = False
-                self.ub_paradox.active = False
-            elif checkbox == self.legendary:
-                self.mega.active = False
-                self.mythic.active = False
-                self.ub_paradox.active = False
-            elif checkbox == self.mythic:
-                self.mega.active = False
-                self.legendary.active = False
-                self.ub_paradox.active = False
-            else:
-                self.mega.active = False
-                self.legendary.active = False
-                self.mythic.active = False
 
 
 class FirstStepGrid(GridLayout):
@@ -153,16 +130,17 @@ class FirstStepGrid(GridLayout):
         self.type_1 = f"Тип 1: {data['type_1']}"
         self.type_2 = f"Тип 2: {data['type_2']}"
         self.rarity = "Редкость: "
-        if data['mega']:
-            self.rarity += "мега-эволюция"
+        if data['ub_paradox']:
+            self.rarity += "УЧ/Парадокс"
         elif data['legendary']:
             self.rarity += "легендарный"
         elif data['mythic']:
             self.rarity += "мифический"
-        elif data['ub_paradox']:
-            self.rarity += "УЧ/Парадокс"
         else:
             self.rarity += "обычный"
+        if data['mega']:
+            self.rarity += " мега-эволюция"
+
 
 
 

@@ -21,9 +21,10 @@ def count_stat_lvl_50(base_stat: int, iv=15):
 
 
 def count_cp_lvl_40(hp: list, attack: list, defence: list):
-    return (attack[0] + attack[1]) * sqrt(defence[0] + defence[1]) * sqrt(hp[0] + hp[1]) * (
-            GO_CP_MULTIPLIER_40 ** 2) / 10
+    return round_stats((attack[0] + attack[1]) * sqrt(defence[0] + defence[1]) * sqrt(hp[0] + hp[1]) * (
+            GO_CP_MULTIPLIER_40 ** 2) / 10)
+
 
 def count_cp_lvl_50(hp: list, attack: list, defence: list):
-    return (attack[0] + attack[1]) * sqrt(defence[0] + defence[1]) * sqrt(hp[0] + hp[1]) * (
-            GO_CP_MULTIPLIER_50 ** 2) / 10
+    return round_stats((attack[0] + attack[1]) * sqrt(defence[0] + defence[1]) * sqrt(hp[0] + hp[1]) * (
+            GO_CP_MULTIPLIER_50 ** 2) / 10)

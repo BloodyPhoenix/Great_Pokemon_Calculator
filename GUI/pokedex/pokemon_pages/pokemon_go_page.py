@@ -136,9 +136,7 @@ class GoDataGrid(GridLayout):
         type_1 = data.type_1
         type_2 = self.get_type_2(data)
         rarity = "Редокость: "
-        if data.mega:
-            rarity += "мега-эволюция"
-        elif data.legendary:
+        if data.legendary:
             rarity += "легендарный"
         elif data.mythic:
             rarity += "мифический"
@@ -146,6 +144,8 @@ class GoDataGrid(GridLayout):
             rarity += "УЧ/Парадокс"
         else:
             rarity += "обычный"
+        if data.mega:
+            rarity += ", мега-эволюция"
         base_data = BaseData(
             pokemon_image=data.picture_link,
             pokemon_number=data.pokedex_number,
@@ -162,10 +162,10 @@ class GoDataGrid(GridLayout):
         stats_grid = StatsGrid()
         stats_grid.add_widget(BaseStats(str(data.base_hp), str(data.base_attack), str(data.base_defence)))
         stats_grid.add_widget(StatsLevel40(
-            str(data.max_hp_40), str(data.max_attack_40), str(data.max_defence_40), str(round_stats(data.max_hp_40)))
+            str(data.max_hp_40), str(data.max_attack_40), str(data.max_defence_40), str(data.max_hp_40))
         )
         stats_grid.add_widget(StatsLevel50(
-            str(data.max_hp_50), str(data.max_attack_50), str(data.max_defence_50), str(round_stats(data.max_hp_50)))
+            str(data.max_hp_50), str(data.max_attack_50), str(data.max_defence_50), str(data.max_hp_50))
         )
         self.scroll_box.add_widget(stats_grid)
         self.scroll_box.add_widget(Label(text="Данные о движениях", height=100, size_hint_y=None))

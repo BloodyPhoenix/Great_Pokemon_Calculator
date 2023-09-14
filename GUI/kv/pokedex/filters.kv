@@ -53,17 +53,17 @@
         cols: 2
         Label:
             size_hint_y: None
-            height: 32
+            height: 44
             text: "CP"
         Spinner:
             id: cp_limit
             size_hint_y: None
-            height: 32
+            height: 44
             text: "Без ограничений"
             values: 'Без ограничений', '2500', '1500'
     Label:
         size_hint_y: None
-        height: 32
+        height: 44
         text: "Параметры сортировки"
     GridLayout:
         size_hint_y: None
@@ -72,50 +72,61 @@
         Spinner:
             id: sorting
             size_hint_y: None
-            height: 32
+            height: 44
             text: "По номеру"
             values: "По номеру", "По названию", "По СР"
         Spinner:
             id: asc_or_desc
             size_hint_y: None
-            height: 32
+            height: 44
             text: "По убыванию"
             values: 'По убыванию', "По возрастанию"
     GridLayout:
         size_hint_y: None
         cols: 2
         rows: 5
-        row_default_height: 24
-        row_force_default: True
+#        row_default_height: 32
+#        row_force_default: True
+        height: self.minimum_height
         Label:
             size_hint_y: None
             text: "Только со СТАБ-ами"
+            height: 32
         CheckBox:
             size_hint_y: None
+            height: 32
             id: no_stab
         Label:
             size_hint_y: None
+            height: 32
             text: "Исключить мифических"
         CheckBox:
             size_hint_y: None
+            height: 32
             id: no_mythics
         Label:
             size_hint_y: None
+            height: 32
             text: "Исключить легендарных"
         CheckBox:
             size_hint_y: None
+            height: 32
             id: no_legends
         Label:
             size_hint_y: None
+            height: 32
             text: "Исключить УЧ/парадоксы"
         CheckBox:
             size_hint_y: None
+            height: 32
             id: no_ub_paradox
         Label:
             size_hint_y: None
+            height: 32
             text: "Исключить меги"
         CheckBox:
             size_hint_y: None
+            height: 32
             id: no_megas
     Button:
         id: apply
