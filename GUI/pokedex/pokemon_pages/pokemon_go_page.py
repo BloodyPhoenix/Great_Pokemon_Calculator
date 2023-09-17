@@ -162,10 +162,10 @@ class GoDataGrid(GridLayout):
         stats_grid = StatsGrid()
         stats_grid.add_widget(BaseStats(str(data.base_hp), str(data.base_attack), str(data.base_defence)))
         stats_grid.add_widget(StatsLevel40(
-            str(data.max_hp_40), str(data.max_attack_40), str(data.max_defence_40), str(data.max_hp_40))
+            str(data.max_hp_40), str(data.max_attack_40), str(data.max_defence_40), str(data.max_cp_40))
         )
         stats_grid.add_widget(StatsLevel50(
-            str(data.max_hp_50), str(data.max_attack_50), str(data.max_defence_50), str(data.max_hp_50))
+            str(data.max_hp_50), str(data.max_attack_50), str(data.max_defence_50), str(data.max_cp_50))
         )
         self.scroll_box.add_widget(stats_grid)
         self.scroll_box.add_widget(Label(text="Данные о движениях", height=100, size_hint_y=None))
