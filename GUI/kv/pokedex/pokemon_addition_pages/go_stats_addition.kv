@@ -1,50 +1,89 @@
+#:import FirstStepGrid GUI.pokedex.pokemon_start_addition
+
+
 <StatsAdditionLayout>:
     base_hp: base_hp
     base_attack: base_attack
     base_defence: base_defence
-    orientation: 'horizontal'
-    size_hint: None, None
-    width: root.width
-    BoxLayout:
+    orientation: 'vertical'
+    Label:
+        text: "Базовые параметры"
         size_hint_y: None
-        orientation: 'vertical'
+        font_size: 24
+    GridLayout:
+        size_hint_y: None
+        rows: 3
+        cols: 2
+        row_default_height: 50
+        row_force_default: True
+        spacing: 50
+        padding: 15, 15, 15, 15
         Label:
-            text: "Базовые параметры"
-            size_hint_y: None
-            height: 50
-        GridLayout:
-            size_hint_y: None
-            rows: 3
-            cols: 2
-            Label:
-                size_hint_y: None
-                text: "HP"
-            TextInput:
-                id: base_hp
-                size_hint_y: None
-            Label:
-                size_hint_y: None
-                text: "Атака"
-            TextInput:
-                id: base_attack
-                size_hint_y: None
-            Label:
-                size_hint_y: None
-                text: "Защита"
-            TextInput:
-                size_hint_y: None
-                id: base_defence
+            size: 150, 40
+            text: "HP"
+            font_size: 18
+        TextInput:
+            id: base_hp
+            size: 150, 40
+        Label:
+            size: 150, 40
+            text: "Атака"
+            font_size: 18
+        TextInput:
+            id: base_attack
+            size: 150, 40
+        Label:
+            size: 150, 40
+            text: "Защита"
+            font_size: 18
+        TextInput:
+            size: 150, 40
+            id: base_defence
 
 
 
 <PokemonGoStatsAddition>:
     main_layout: main_layout
+    first_step_data: first_step_data
+    stats: stats
     Widget:
-        BoxLayout:
+        GridLayout:
             id: main_layout
-            orientation: 'vertical'
-            size_hint_y: None
+            rows: 3
+            cols: 1
+            row_default_height: root.height * 0.25
+            spacing: 30
             top: root.top
             center_x: root.center_x
             width: root.width
+            size_hint_y: None
+            FirstStepGrid:
+                id: first_step_data
+            StatsAdditionLayout:
+                id: stats
+        GridLayout:
+            rows: 2
+            cols: 1
+            width: root.width
+            GridLayout:
+                rows: 1
+                cols: 2
+                Button:
+                    text: "Назад"
+                    on_release: root.go_back()
+                Button:
+                    text: "Продолжить"
+                    on_release: root.proceed()
+            GridLayout:
+                rows: 1
+                cols: 3
+                Button:
+                    text: "Главное меню"
+                    on_release: root.to_main()
+                Button:
+                    text: "Выбор игры"
+                    on_release: root.game_selection()
+                Button:
+                    text: "Покедекс"
+                    on_release: root.pokedex()
 
