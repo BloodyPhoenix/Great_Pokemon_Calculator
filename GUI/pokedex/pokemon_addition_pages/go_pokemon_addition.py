@@ -10,27 +10,41 @@ class StatsAdditionLayout(BoxLayout):
 
 
 class PokemonGoStatsAddition(Screen):
+    #TODO Возможно, следует вынести работу с first_step_data в отдельный класс и отнаследоваться от него
     """Класс для добавления параметров атаки, защиты, ХП и СР для покемонов в Pokemon Go"""
 
-    def __init__(self, data, first_step_grid, **kwargs):
+    def __init__(self, data, prev_screen, **kwargs):
         super().__init__(**kwargs)
         self.data = data
-        self.first_step_grid = first_step_grid
-        self.main_layout.add_widget(self.first_step_grid)
-        self.stats = StatsAdditionLayout()
-        self.main_layout.add_widget(self.stats)
+        self.prev_screen = prev_screen
+        self.first_step_data.image_pass = self.data['image_pass']
+        self.first_step_data.number = self.data['number']
+        self.first_step_data.species_name = self.data['species_name']
+        self.first_step_data.form_name = self.data['form_name']
+        self.first_step_data.type_1 = self.data['type_1']
+        self.first_step_data.type_2 = self.data['type_2']
+        if self.data['legendary']:
+            self.first_step_data.rarity = "Легендарный"
+        elif self.data['mythic']:
+            self.first_step_data.rarity = "Мифический"
+        elif self.data['ub_paradox']:
+            self.first_step_data.rarity = "УЧ/Парадокс"
+        else:
+            self.first_step_data.rarity = "Обычный"
+        if self.data['mega']:
+            self.first_step_data.rarity += ", мега"
 
     def to_main(self):
-        pass
+        self.manager.current = 'main screen'
 
     def pokedex(self):
-        pass
+        self.manager.current = 'Pokemon Go pokedex'
 
     def game_selection(self):
-        pass
+        self.manager.current = 'pokedex game selection'
 
     def go_back(self):
-        pass
+        self.manager.switch_to(self.prev_screen)
 
     def proceed(self):
         """
@@ -38,17 +52,17 @@ class PokemonGoStatsAddition(Screen):
         Если ошибок нет, переводит на следующее окно
         """
         mistake = ''
-        if len(self.base_hp.text) < 1:
+        if len(self.stats.base_hp.text) < 1:
             mistake += "Не введено базовое значение НР\n"
-        elif self.base_hp.text.isalpha():
+        elif self.stats.base_hp.text.isalpha():
             mistake += "В поле \"Базовое НР\" введено не число\n"
-        if len(self.base_attack.text) < 1:
+        if len(self.stats.base_attack.text) < 1:
             mistake += "Не введено базовое значение атаки\n"
-        elif self.base_attack.text.isalpha():
+        elif self.stats.base_attack.text.isalpha():
             mistake += "В поле \"Базовая атака\" введено не число\n"
-        if len(self.base_defence.text) < 1:
+        if len(self.stats.base_defence.text) < 1:
             mistake += "Не введено базовое значение защиты\n"
-        elif self.base_defence.text.isalpha():
+        elif self.stats.base_defence.text.isalpha():
             mistake += "В поле \"Базовая защита\" введено не число\n"
         if len(mistake) > 0:
             popup = Popup(title="Ошибка ввода данных", content=Label(text=mistake, font_size=24),
