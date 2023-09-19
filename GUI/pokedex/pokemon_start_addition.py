@@ -39,6 +39,9 @@ class PokemonStartAddition(Screen):
             self.pokemon_rarity.legendary.active = self.data['legendary']
             self.pokemon_rarity.mythic.active = self.data['mythic']
             self.pokemon_rarity.ub_paradox.active = self.data['ub_paradox']
+            self.mega.active = self.data['mega']
+            if all(not active for active in (self.data['legendary'], self.data['mythic'], self.data['ub_paradox'])):
+                self.pokemon_rarity.common.active = True
 
     def proceed(self):
         """
@@ -72,7 +75,7 @@ class PokemonStartAddition(Screen):
             'form_name': self.ids['form_name'].text,
             'type_1': self.first_type_selector.text,
             'type_2': self.second_type_selector.text,
-            'mega': self.pokemon_rarity.mega.active,
+            'mega': self.mega.active,
             'legendary': self.pokemon_rarity.legendary.active,
             'mythic': self.pokemon_rarity.mythic.active,
             'ub_paradox': self.pokemon_rarity.ub_paradox.active
@@ -95,26 +98,23 @@ class PokemonStartAddition(Screen):
 
 
 class PokemonRarity(GridLayout):
-    """Класс, позволяющий установить редкость покемона: мега-эволюция, легендарный, мифический, ультрачудоваище/парадокс"""
+    """Класс, позволяющий установить редкость покемона: мега-эволюция, легендарный, мифический,
+    ультрачудоваище/парадокс"""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(Label(text="Обычный", size_hint_y=None, height=44, size_hint_x=None))
         self.common = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.common)
-        self.mega.bind(active=self.active)
         self.add_widget(Label(text="Легендарный", size_hint_y=None, height=44, size_hint_x=None))
         self.legendary = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.legendary)
-        self.legendary.bind(active=self.active)
         self.add_widget(Label(text="Мифический", size_hint_y=None, height=44, size_hint_x=None))
         self.mythic = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.mythic)
-        self.mythic.bind(active=self.active)
         self.add_widget(Label(text="УЧ/Парадокс", size_hint_y=None, height=44, size_hint_x=None))
         self.ub_paradox = CheckBox(size_hint_y=None, height=44, size_hint_x=None, width=44, group='rarity')
         self.add_widget(self.ub_paradox)
-        self.ub_paradox.bind(active=self.active)
 
 
 class FirstStepGrid(GridLayout):

@@ -32,7 +32,6 @@ class PokemonGoStatsAddition(Screen):
     def go_back(self):
         pass
 
-
     def proceed(self):
         """
         Метод, который проверяет корректность введённых значений, и если они не корректны, выдаёт окно ошибки.
@@ -52,11 +51,9 @@ class PokemonGoStatsAddition(Screen):
         elif self.base_defence.text.isalpha():
             mistake += "В поле \"Базовая защита\" введено не число\n"
         if len(mistake) > 0:
-            popup = Popup(title="Ошибка ввода данных", content=Label(text=mistake, font_size=24), size_hint=(None, None),
+            popup = Popup(title="Ошибка ввода данных", content=Label(text=mistake, font_size=24),
+                          size_hint=(None, None),
                           size=(500, 500))
             popup.open()
         else:
             pass
-
-
-

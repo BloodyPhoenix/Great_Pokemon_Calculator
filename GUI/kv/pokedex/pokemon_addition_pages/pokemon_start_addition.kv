@@ -49,6 +49,7 @@
 <PokemonStartAddition>:
     main_properties_grid: main_properties_grid
     pokemon_rarity: pokemon_rarity
+    mega: mega
     Widget:
         GridLayout:
             id: main_properties_grid
@@ -82,11 +83,27 @@
             TextInput:
                 id: form_name
                 font_size: 24
-        PokemonRarity:
-            id: pokemon_rarity
+        GridLayout:
+            rows: 1
+            cols: 2
             size_hint_y: None
-            center_x: root.width * 0.45
-            center_y: 225
+            height: self.minimum_height
+            width: root.width
+            center_x: root.width * 0.55
+            center_y: root.height * 0.35
+            GridLayout:
+                cols: 2
+                rows: 1
+                Label:
+                    text: "Мега-эволюция"
+                    font_size: 20
+                    width: 250
+                CheckBox:
+                    id: mega
+                    width: 50
+            PokemonRarity:
+                id: pokemon_rarity
+                size_hint_y: None
         Button:
             center_y: 150
             center_x: root.center_x
@@ -130,7 +147,6 @@
     rarity: ''
     type_1: ''
     type_2: ''
-    mega: mega
     size_hint_y: None
     width: root.width
     Image:
@@ -162,18 +178,6 @@
             size: self.texture_size
             text: root.rarity
             halign: 'left'
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint_y: None
-        height: self.minimum_height
-        center_x: root.center_x
-        Label:
-            text: "Мега-эволюция"
-            font_size: 24
-            size_hint_y: None
-        CheckBox:
-            id: mega
-            size_hint_y: None
 
 
 
