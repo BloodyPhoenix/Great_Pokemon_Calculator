@@ -2,13 +2,14 @@ from kivy.clock import Clock
 from kivy.properties import BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
+
+from GUI.custom_widgets import SelectableRecycleBoxLayout, RowLayout, SelectableGrid
 from databases import collect_data, get_data_from_database
 from kivy.uix.screenmanager import Screen
 from GUI.pokedex.pokemon_pages import DATA_GRIDS
@@ -47,39 +48,17 @@ class PokemonPage(Screen):
         self.manager.current = 'Pokemon Go pokedex'
 
 
-class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+class PokedexRecycleBoxLayout(SelectableRecycleBoxLayout):
     """Класс, позволяющий создать проматываемую сетку покедекса с возможностью выбора по щелчку"""
     pass
 
 
-class RowLayout(BoxLayout, RecycleDataViewBehavior):
-    '''Класс отдельного ряда в покедексе'''
-    index = None
-    selected = BooleanProperty(False)
-    selectable = BooleanProperty(True)
-
-    def refresh_view_attrs(self, rv, index, data):
-        '''Обработчик изменений виджета'''
-        self.index = index
-        return super(RowLayout, self).refresh_view_attrs(
-            rv, index, data)
-
-    def on_touch_down(self, touch):
-        '''Позволяет выбрать определённую строчку'''
-        if super(RowLayout, self).on_touch_down(touch):
-            return True
-        if self.collide_point(*touch.pos) and self.selectable:
-            return self.parent.select_with_touch(self.index, touch)
-
-    def apply_selection(self, rv, index, is_selected):
-        '''Применить выбор и переключитьса на индивидуальную странчку покемона, вызвав функцию open_pokemon_page
-        у класса PokedexGrid, дальним потомком которого является конкретный ряд'''
-        self.selected = is_selected
-        if is_selected:
-            self.parent.parent.parent.parent.apply_selection(self)
+class PokedexRowLayout(RowLayout):
+    """Класс отдельного ряда в покедексе"""
+    pass
 
 
-class PokedexGrid(GridLayout):
+class PokedexGrid(SelectableGrid):
     """
     Класс сетки покедекса.
     Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку

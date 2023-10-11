@@ -9,7 +9,7 @@ from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import Screen
 
-
+from GUI.custom_widgets import SelectableGrid, RowLayout, SelectableRecycleBoxLayout
 
 
 class StatsAdditionLayout(BoxLayout):
@@ -116,38 +116,17 @@ class GoAddPokemonMoves(Screen):
         self.moves_selectors.add_widget(self.charge_moves_selector)
 
 
-class SelectableMoveRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+class SelectableMoveRecycleBoxLayout(SelectableRecycleBoxLayout):
     """Класс, позволяющий создать проматываемую сетку движений с возможностью выбора по щелчку"""
     pass
 
 
-class SelectMoveRowLayout(BoxLayout, RecycleDataViewBehavior):
+class MoveRowLayout(RowLayout):
     """Класс отдельного ряда в сетке"""
-    index = None
-    selected = BooleanProperty(False)
-    selectable = BooleanProperty(True)
-
-    def refresh_view_attrs(self, rv, index, data):
-        """Обработчик изменений виджета"""
-        self.index = index
-        return super(SelectMoveRowLayout, self).refresh_view_attrs(
-            rv, index, data)
-
-    def on_touch_down(self, touch):
-        """Позволяет выбрать определённую строчку"""
-        if super(SelectMoveRowLayout, self).on_touch_down(touch):
-            return True
-        if self.collide_point(*touch.pos) and self.selectable:
-            return self.parent.select_with_touch(self.index, touch)
-
-    def apply_selection(self, rv, index, is_selected):
-        """Применить выбор и добавить движение в список"""
-        self.selected = is_selected
-        if is_selected:
-            self.parent.parent.parent.parent.apply_selection(self)
+    pass
 
 
-class MovesGrid(GridLayout):
+class MovesGrid(SelectableGrid):
     """
     Класс сетки движений. Получает данные из базы и заполняет ряды
     """
