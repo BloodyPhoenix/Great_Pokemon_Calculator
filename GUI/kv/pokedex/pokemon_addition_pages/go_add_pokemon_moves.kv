@@ -1,0 +1,55 @@
+#:kivy 2.1.0
+
+<SelectMoveRowLayout>:
+    move_name: ''
+    move_type: ''
+    orientation: 'horizontal'
+    Label:
+        text: root.move_name
+    Label:
+        text: root.move_type
+
+
+<MovesGrid>:
+    rv: rv_id
+    cols:  1
+    rows: 2
+    padding: 0, root.height * 0.1, 0, root.height * 0.2
+    GridLayout:
+        cols: 7
+        rows: 1
+        size_hint_y: 0.1
+        Label:
+            text: 'Move name'
+        Label:
+            text: 'Move type'
+    GridLayout: # data
+        cols: 1
+        rows: 1
+        RecycleView:
+            bar_width: self.width / 20
+            bar_height: self.height / 15
+            id: rv_id
+            viewclass: 'RowLayout'
+            size_hint: 1, 0.7
+            SelectableMoveRecycleBoxLayout:
+                default_size: None, dp(75)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+
+
+<GoAddPokemonMoves>:
+    moves_selectors: moves_selectors
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            Label:
+                text: "Быстрые движения"
+            Label:
+                text: "Заряжаемые движения"
+        BoxLayout:
+            id: moves_selectors
+            orientation: 'horizontal'

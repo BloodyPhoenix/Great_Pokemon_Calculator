@@ -79,18 +79,16 @@ class PokemonStartAddition(Screen):
             popup.open()
         else:
             number = self.ids['number'].text
-            self.data = {
-                'image_pass': self.image_pass,
-                'number': f'#{number}',
-                'species_name': self.ids['species_name'].text,
-                'form_name': self.ids['form_name'].text,
-                'type_1': self.first_type_selector.text,
-                'type_2': self.second_type_selector.text,
-                'mega': self.mega.active,
-                'legendary': self.pokemon_rarity.legendary.active,
-                'mythic': self.pokemon_rarity.mythic.active,
-                'ub_paradox': self.pokemon_rarity.ub_paradox.active
-                }
+            self.data['image_pass'] = self.image_pass
+            self.data['number'] = f'#{number}'
+            self.data['species_name'] = self.ids['species_name'].text
+            self.data['form_name'] = self.ids['form_name'].text
+            self.data['type_1'] = self.first_type_selector.text
+            self.data['type_2'] = self.second_type_selector.text
+            self.data['mega'] = self.mega.active
+            self.data['legendary'] = self.pokemon_rarity.legendary.active
+            self.data['mythic'] = self.pokemon_rarity.mythic.active
+            self.data['ub_paradox'] = self.pokemon_rarity.ub_paradox.active
             from .pokemon_addition_pages import pokemon_adders
             screen_name = f'{self.game} add pokemon'
             new_screen = pokemon_adders[self.game](name=screen_name, prev_screen=self, data=self.data)

@@ -76,7 +76,7 @@ class RowLayout(BoxLayout, RecycleDataViewBehavior):
         у класса PokedexGrid, дальним потомком которого является конкретный ряд'''
         self.selected = is_selected
         if is_selected:
-            self.parent.parent.parent.parent.open_pokemon_page(self.form.text)
+            self.parent.parent.parent.parent.apply_selection(self)
 
 
 class PokedexGrid(GridLayout):
@@ -122,10 +122,11 @@ class PokedexGrid(GridLayout):
             return pokemon.type_2
         return ''
 
-    def open_pokemon_page(self, form):
+    def apply_selection(self, row):
         """
         Создать и открыть страничку конкретного покемона
         """
+        form = row.form.text
         page_name = self.game + " " + form
         page = PokemonPage(self.game, form, name=page_name)
         self.parent.manager.add_widget(page)

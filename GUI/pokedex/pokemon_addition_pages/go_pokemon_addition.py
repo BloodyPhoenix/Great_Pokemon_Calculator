@@ -1,7 +1,15 @@
+from kivy.properties import BooleanProperty
+from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
+from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import Screen
+
+
 
 
 class StatsAdditionLayout(BoxLayout):
@@ -34,6 +42,15 @@ class PokemonGoStatsAddition(Screen):
         if self.data['mega']:
             self.first_step_data.rarity += ", мега"
 
+    def on_pre_enter(self, *args):
+        super().on_pre_enter(*args)
+        if 'hp' in self.data.keys():
+            self.stats.base_hp.text = self.data['hp']
+        if 'attack' in self.data.keys():
+            self.stats.base_attack.text = self.data['attack']
+        if 'defence' in self.data.keys():
+            self.stats.base_defence.text = self.data['defence']
+
     def to_main(self):
         self.manager.current = 'main screen'
 
@@ -44,6 +61,14 @@ class PokemonGoStatsAddition(Screen):
         self.manager.current = 'pokedex game selection'
 
     def go_back(self):
+        if len(self.stats.base_hp.text) > 1 and self.stats.base_hp.text.isdigit():
+            self.data['hp'] = self.stats.base_hp.text
+        if len(self.stats.base_attack.text) > 1 and self.stats.base_attack.text.isdigit():
+            self.data['attack'] = self.stats.base_attack.text
+        if len(self.stats.base_defence.text) > 1 and self.stats.base_defence.text.isdigit():
+            self.data['defence'] = self.stats.base_defence.text
+        self.prev_screen.data = self.data
+        self.data = self.data
         self.manager.switch_to(self.prev_screen)
 
     def proceed(self):
@@ -73,3 +98,73 @@ class PokemonGoStatsAddition(Screen):
             self.data['hp'] = self.stats.base_hp.text
             self.data['attack'] = self.stats.base_attack.text
             self.data['defence'] = self.stats.base_defence.text
+            new_screen_name = 'go pokemon add moves'
+            new_screen = GoAddPokemonMoves(name=new_screen_name, data=self.data, prev_screen=self)
+            self.manager.add_widget(new_screen)
+            self.manager.switch_to(new_screen)
+
+
+class GoAddPokemonMoves(Screen):
+
+    def __init__(self, data, prev_screen, **kwargs):
+        super().__init__(**kwargs)
+        self.data = data
+        self.prev_screen = prev_screen
+        self.fast_moves_selector = MovesGrid(moves_category='fast')
+        self.moves_selectors.add_widget(self.fast_moves_selector)
+        self.charge_moves_selector = MovesGrid(moves_category='charge')
+        self.moves_selectors.add_widget(self.charge_moves_selector)
+
+
+class SelectableMoveRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
+    """Класс, позволяющий создать проматываемую сетку движений с возможностью выбора по щелчку"""
+    pass
+
+
+class SelectMoveRowLayout(BoxLayout, RecycleDataViewBehavior):
+    """Класс отдельного ряда в сетке"""
+    index = None
+    selected = BooleanProperty(False)
+    selectable = BooleanProperty(True)
+
+    def refresh_view_attrs(self, rv, index, data):
+        """Обработчик изменений виджета"""
+        self.index = index
+        return super(SelectMoveRowLayout, self).refresh_view_attrs(
+            rv, index, data)
+
+    def on_touch_down(self, touch):
+        """Позволяет выбрать определённую строчку"""
+        if super(SelectMoveRowLayout, self).on_touch_down(touch):
+            return True
+        if self.collide_point(*touch.pos) and self.selectable:
+            return self.parent.select_with_touch(self.index, touch)
+
+    def apply_selection(self, rv, index, is_selected):
+        """Применить выбор и добавить движение в список"""
+        self.selected = is_selected
+        if is_selected:
+            self.parent.parent.parent.parent.apply_selection(self)
+
+
+class MovesGrid(GridLayout):
+    """
+    Класс сетки движений. Получает данные из базы и заполняет ряды
+    """
+    def __init__(self, moves_category, **kwargs):
+        super().__init__(**kwargs)
+        self.moves_category = moves_category
+        global data
+        from databases import moves_getters_dict
+        data_getter = moves_getters_dict['Pokemon Go']
+        data = data_getter('any', self.moves_category)
+        self.rv.scroll_type = ['bars', 'content']
+        self.rv.data = [{'move_name': move.name, 'move_type': move.type
+        } for move in data]
+
+    def apply_selection(self, row):
+        """
+        Добавить движение в список
+        """
+        print(row.move_name)
+
