@@ -1,13 +1,6 @@
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty
-from kivy.uix.behaviors import FocusBehavior
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.uix.recycleboxlayout import RecycleBoxLayout
-from kivy.uix.recycleview.layout import LayoutSelectionBehavior
-from kivy.uix.recycleview.views import RecycleDataViewBehavior
 
 from GUI.custom_widgets import SelectableRecycleBoxLayout, RowLayout, SelectableGrid
 from databases import collect_data, get_data_from_database

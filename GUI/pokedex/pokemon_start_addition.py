@@ -15,7 +15,7 @@ class PokemonStartAddition(Screen):
         from utils import TypeSelector
         self.game = game
         self.image_pass = '/home/maria/PycharmProjects/ВПК/new_images/alomomola.png'
-        #TODO очиститьсловарь после завершения разработки этого функционала
+        #TODO очистить словарь после завершения разработки этого функционала
         self.data = {'image_pass': '/home/maria/PycharmProjects/ВПК/new_images/alomomola.png',
             'number': '#1',
             'species_name': 'Alomomola',

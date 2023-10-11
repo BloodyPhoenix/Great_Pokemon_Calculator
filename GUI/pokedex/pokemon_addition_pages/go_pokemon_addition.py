@@ -1,15 +1,9 @@
-from kivy.properties import BooleanProperty
-from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.uix.recycleboxlayout import RecycleBoxLayout
-from kivy.uix.recycleview.layout import LayoutSelectionBehavior
-from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.screenmanager import Screen
 
-from GUI.custom_widgets import SelectableGrid, RowLayout, SelectableRecycleBoxLayout
+from GUI.custom_widgets import SelectableGrid, RowLayout, SelectableRecycleBoxLayout, FirstStepData
 
 
 class StatsAdditionLayout(BoxLayout):
@@ -17,30 +11,8 @@ class StatsAdditionLayout(BoxLayout):
     pass
 
 
-class PokemonGoStatsAddition(Screen):
-    #TODO Возможно, следует вынести работу с first_step_data в отдельный класс и отнаследоваться от него
+class PokemonGoStatsAddition(FirstStepData):
     """Класс для добавления параметров атаки, защиты, ХП и СР для покемонов в Pokemon Go"""
-
-    def __init__(self, data, prev_screen, **kwargs):
-        super().__init__(**kwargs)
-        self.data = data
-        self.prev_screen = prev_screen
-        self.first_step_data.image_pass = self.data['image_pass']
-        self.first_step_data.number = self.data['number']
-        self.first_step_data.species_name = self.data['species_name']
-        self.first_step_data.form_name = self.data['form_name']
-        self.first_step_data.type_1 = self.data['type_1']
-        self.first_step_data.type_2 = self.data['type_2']
-        if self.data['legendary']:
-            self.first_step_data.rarity = "Легендарный"
-        elif self.data['mythic']:
-            self.first_step_data.rarity = "Мифический"
-        elif self.data['ub_paradox']:
-            self.first_step_data.rarity = "УЧ/Парадокс"
-        else:
-            self.first_step_data.rarity = "Обычный"
-        if self.data['mega']:
-            self.first_step_data.rarity += ", мега"
 
     def on_pre_enter(self, *args):
         super().on_pre_enter(*args)
