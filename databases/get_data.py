@@ -7,9 +7,9 @@ def check_data(game):
     Функция, проверяющая, есть ли в принципе данные о покемонах в указанной игре.
     Нужно переделать так, чтобы она искала базы через словарь по ключу games
     """
-    from databases import create_engine, table_names, GoBase
-    engine = create_engine()
-    GoBase.metadata.create_all(engine)
+    from databases import create_engine, table_names, create_tables
+    create_tables()
+    engine= create_engine()
     local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
     db = local_session()
     try:

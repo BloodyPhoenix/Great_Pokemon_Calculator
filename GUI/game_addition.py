@@ -6,6 +6,9 @@ from sqlalchemy.orm import sessionmaker
 
 class GameAddition(Screen):
 
+    def to_main(self):
+        self.manager.current = 'main screen'
+
     def save_data(self):
         generation = self.generation.text
         game_name = self.game_name.text

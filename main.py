@@ -6,7 +6,6 @@ from GUI import MainScreen,GameSelection, GameAddition
 from kivy.lang import Builder
 from dotenv import load_dotenv
 
-from databases import Metadata, create_engine
 
 '''
 Основной файл запуска приложения. Строит базовую структуру kivy, подгружает необходимые файлы и переменные окружения"
@@ -24,17 +23,14 @@ class GPCApp(App):
 
     def build(self):
         manager = ScreenManager()
-#        manager.add_widget(MainScreen(name='main screen'))
-#        manager.add_widget(GameSelection(name='pokedex game selection'))
-#        manager.current = 'pokedex game selection'
+        manager.add_widget(MainScreen(name='main screen'))
+        manager.add_widget(GameSelection(name='pokedex game selection'))
+        manager.current = 'pokedex game selection'
         manager.add_widget(GameAddition(name='game addition'))
-        manager.current = 'game addition'
         return manager
 
 
 if __name__ == '__main__':
-    engine = create_engine()
-    Metadata.metadata.create_all(engine)
     GPCApp().run()
 
 

@@ -193,6 +193,7 @@ def save_data(data: dict):
         pictures_dir += directory
         pictures_dir += '/'
     pictures_dir += 'databases/pictures/go_pokemon/'
+    pictures_dir = os.path.normpath(pictures_dir)
     if not os.path.exists(pictures_dir):
         os.makedirs(pictures_dir)
     os.chdir(pictures_dir)

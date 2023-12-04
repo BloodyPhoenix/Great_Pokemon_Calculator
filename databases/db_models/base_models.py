@@ -44,6 +44,7 @@ class BasePokemon(Metadata):
     id: Mapped[int] = mapped_column(primary_key=True)
     national_number: Mapped[int] = mapped_column(Integer)
     species_name: Mapped[str] = mapped_column(String(20))
+    picture_link: Mapped[str] = mapped_column(String(150))
     games: Mapped[List['Game']] = relationship(secondary=AvailablePokemon, back_populates='pokemon')
 
 

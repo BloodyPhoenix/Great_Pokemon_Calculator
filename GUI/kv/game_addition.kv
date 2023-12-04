@@ -30,8 +30,15 @@
                 id: dlc
         Button:
             text: "Сохранить"
-            center_y: 75
+            center_y: 160
             center_x: root.width / 2
             font_size: 24
             size: 200, 75
             on_release: root.save_data()
+        Button:
+            text: "Назад"
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            on_release: root.to_main()

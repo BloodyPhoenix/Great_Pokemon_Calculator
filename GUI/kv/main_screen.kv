@@ -10,12 +10,13 @@
             top: root.top / 5 * 4
             text: "Войти"
         Button:
-            id: register
+            id: add_game
             size: 500, 75
             font_size: 42
             center_x: root.width / 2
             top: root.top/9 * 5
-            text: "Зарегистрироваться"
+            text: "Добавить игру"
+            on_release: root.add_game()
         Button:
             id: pokedex
             size: 500, 75
