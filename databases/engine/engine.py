@@ -1,6 +1,4 @@
 import os
-
-from dotenv import load_dotenv, find_dotenv
 from sqlalchemy import URL
 from sqlalchemy.engine import create_engine as _create_engine
 

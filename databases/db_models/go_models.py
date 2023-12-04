@@ -1,23 +1,20 @@
 from typing import Optional, List
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey, CheckConstraint
+from sqlalchemy import Integer, String, Float, Table, Column, ForeignKey
 
-
-class Base(DeclarativeBase):
-    pass
-
+from .metadata import Metadata
 
 FastMoveDetail = Table(
     'FastMoveDetail',
-    Base.metadata,
+    Metadata.metadata,
     Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_fast.id'), primary_key=True)
 )
 
 ChargeMoveDetail = Table(
     'ChargeMoveDetail',
-    Base.metadata,
+    Metadata.metadata,
     Column('pokemon_form_name', ForeignKey('GO_pokemon.form_name'), primary_key=True),
     Column('move_id', ForeignKey('GO_moves_charge.id'), primary_key=True)
 )
@@ -31,7 +28,7 @@ ChargeMoveDetail = Table(
 # )
 
 
-class FastMove(Base):
+class FastMove(Metadata):
     __tablename__ = 'GO_moves_fast'
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
@@ -42,7 +39,7 @@ class FastMove(Base):
     speed_pve: Mapped[float] = mapped_column(Float)
     energy_pvp: Mapped[int] = mapped_column(Integer)
     speed_pvp: Mapped[float] = mapped_column(Float)
-    pokemon: Mapped[List['Pokemon']] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
+    pokemon: Mapped[List['GoPokemon']] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
 
     def __str__(self):
         return f"""
@@ -51,7 +48,7 @@ type: {self.type}
 """
 
 
-class ChargeMove(Base):
+class ChargeMove(Metadata):
     __tablename__ = 'GO_moves_charge'
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
@@ -61,7 +58,7 @@ class ChargeMove(Base):
     speed: Mapped[float] = mapped_column(Float)
     charges_pve: Mapped[int] = mapped_column(Integer)
     energy_pvp: Mapped[int] = mapped_column(Integer)
-    pokemon: Mapped[List['Pokemon']] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
+    pokemon: Mapped[List['GoPokemon']] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
 
     def __str__(self):
         return f"""
@@ -70,7 +67,7 @@ type: {self.type}
 """
 
 
-class Pokemon(Base):
+class GoPokemon(Metadata):
     __tablename__ = 'GO_pokemon'
     picture_link: Mapped[str] = mapped_column(String(150))
     pokedex_number: Mapped[str] = mapped_column(String(5))

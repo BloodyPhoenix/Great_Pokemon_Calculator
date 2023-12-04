@@ -2,9 +2,11 @@ from os import walk
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 
-from GUI import MainScreen,GameSelection
+from GUI import MainScreen,GameSelection, GameAddition
 from kivy.lang import Builder
 from dotenv import load_dotenv
+
+from databases import Metadata, create_engine
 
 '''
 Основной файл запуска приложения. Строит базовую структуру kivy, подгружает необходимые файлы и переменные окружения"
@@ -16,17 +18,23 @@ for path, _, files in walk('./GUI/kv/'):
         Builder.load_file(path+'/'+kv)
 
 
+
+
 class GPCApp(App):
 
     def build(self):
         manager = ScreenManager()
-        manager.add_widget(MainScreen(name='main screen'))
-        manager.add_widget(GameSelection(name='pokedex game selection'))
-        manager.current = 'pokedex game selection'
+#        manager.add_widget(MainScreen(name='main screen'))
+#        manager.add_widget(GameSelection(name='pokedex game selection'))
+#        manager.current = 'pokedex game selection'
+        manager.add_widget(GameAddition(name='game addition'))
+        manager.current = 'game addition'
         return manager
 
 
 if __name__ == '__main__':
+    engine = create_engine()
+    Metadata.metadata.create_all(engine)
     GPCApp().run()
 
 
