@@ -49,3 +49,16 @@ class SelectableGrid(GridLayout):
         Применить выбор ряда. Метод должен быть переопределён
         """
         pass
+
+
+class GridWithTitles(GridLayout):
+    """
+    Класс сетки, к которому добавляются ещё две сетки: с заголовками и с данными. Заголовки всегда добавляются первыми
+    """
+
+    def __init__(self, head: GridLayout, **kwargs):
+        super().__init__(**kwargs)
+        self.add_widget(head)
+        self.data_widget = SelectableGrid()
+        self.add_widget(self.data_widget)
+

@@ -1,8 +1,9 @@
 from kivy.clock import Clock
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from GUI.custom_widgets import SelectableRecycleBoxLayout, RowLayout, SelectableGrid
+from GUI.custom_widgets import SelectableRecycleBoxLayout, RowLayout, GridWithTitles
 from databases import collect_data, get_data_from_database
 from kivy.uix.screenmanager import Screen
 from GUI.pokedex.pokemon_pages import DATA_GRIDS
@@ -51,21 +52,25 @@ class PokedexRowLayout(RowLayout):
     pass
 
 
-class PokedexGrid(SelectableGrid):
+class PokedexHead(GridLayout):
+    pass
+
+
+class PokedexGrid(GridWithTitles):
     """
     Класс сетки покедекса.
     Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку
     """
-    def __init__(self, game, incoming_data, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, game, incoming_data, head, **kwargs):
+        super().__init__(head, **kwargs)
         self.game = game
         global data
         if incoming_data is None:
             data = get_data_from_database(game)
         else:
             data = incoming_data
-        self.rv.scroll_type = ['bars', 'content']
-        self.rv.data = [{
+        self.data_widget.rv.scroll_type = ['bars', 'content']
+        self.data_widget.rv.data = [{
             'image': pokemon.picture_link,
             'pokedex_number': pokemon.pokedex_number,
             'form_name': pokemon.form_name,
@@ -119,7 +124,8 @@ class Pokedex(Screen):
         self.game = game
         self.filters = filters[game]['property_filer']()
         self.name_filter = filters[game]['name_filter']
-        self.grid = PokedexGrid(game, incoming_data=None)
+        head = PokedexHead()
+        self.grid = PokedexGrid(game, incoming_data=None, head=head)
         self.add_widget(self.grid)
 
     def update(self):
