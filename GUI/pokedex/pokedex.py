@@ -3,7 +3,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from GUI.custom_widgets import SelectableRecycleBoxLayout, RowLayout, GridWithTitles
+from GUI.custom_widgets import RowLayout, GridWithTitles
 from databases import collect_data, get_data_from_database
 from kivy.uix.screenmanager import Screen
 from GUI.pokedex.pokemon_pages import DATA_GRIDS
@@ -40,11 +40,6 @@ class PokemonPage(Screen):
         Возвращает пользователя на экран покедекса
         """
         self.manager.current = 'Pokemon Go pokedex'
-
-
-class PokedexRecycleBoxLayout(SelectableRecycleBoxLayout):
-    """Класс, позволяющий создать проматываемую сетку покедекса с возможностью выбора по щелчку"""
-    pass
 
 
 class PokedexRowLayout(RowLayout):
@@ -125,7 +120,7 @@ class Pokedex(Screen):
         self.filters = filters[game]['property_filer']()
         self.name_filter = filters[game]['name_filter']
         head = PokedexHead()
-        self.grid = PokedexGrid(game, incoming_data=None, head=head)
+        self.grid = PokedexGrid(game, incoming_data=None, head=head, view_class=PokedexRowLayout)
         self.add_widget(self.grid)
 
     def update(self):

@@ -1,3 +1,6 @@
+#:kivy 2.1.0
+
+
 <SelectableGrid>:
     rv: rv_id
     cols: 1
@@ -6,7 +9,6 @@
         bar_width: self.width / 20
         bar_height: self.height / 15
         id: rv_id
-        viewclass: 'RowLayout'
         size_hint: 1, 0.7
         SelectableRecycleBoxLayout:
             default_size: None, dp(75)

@@ -1,9 +1,10 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 
-from GUI.custom_widgets import SelectableGrid, RowLayout, SelectableRecycleBoxLayout, FirstStepData
+from GUI.custom_widgets import GridWithTitles, RowLayout, FirstStepData
 
 
 class StatsAdditionLayout(BoxLayout):
@@ -76,41 +77,25 @@ class PokemonGoStatsAddition(FirstStepData):
             self.manager.switch_to(new_screen)
 
 
-class GoAddPokemonMoves(Screen):
-
-    def __init__(self, data, prev_screen, **kwargs):
-        super().__init__(**kwargs)
-        self.data = data
-        self.prev_screen = prev_screen
-        self.fast_moves_selector = MovesGrid(moves_category='fast')
-        self.moves_selectors.add_widget(self.fast_moves_selector)
-        self.charge_moves_selector = MovesGrid(moves_category='charge')
-        self.moves_selectors.add_widget(self.charge_moves_selector)
-
-
-class SelectableMoveRecycleBoxLayout(SelectableRecycleBoxLayout):
-    """Класс, позволяющий создать проматываемую сетку движений с возможностью выбора по щелчку"""
-    pass
-
-
-class MoveRowLayout(RowLayout):
+class SelectMoveRowLayout(RowLayout):
     """Класс отдельного ряда в сетке"""
     pass
 
 
-class MovesGrid(SelectableGrid):
+class MovesGrid(GridWithTitles):
     """
     Класс сетки движений. Получает данные из базы и заполняет ряды
     """
     def __init__(self, moves_category, **kwargs):
-        super().__init__(**kwargs)
+        head = MoveAdditionHead()
+        super().__init__(head=head, **kwargs)
         self.moves_category = moves_category
         global data
         from databases import moves_getters_dict
         data_getter = moves_getters_dict['Pokemon Go']
         data = data_getter('any', self.moves_category)
-        self.rv.scroll_type = ['bars', 'content']
-        self.rv.data = [{'move_name': move.name, 'move_type': move.type
+        self.data_widget.rv.scroll_type = ['bars', 'content']
+        self.data_widget.rv.data = [{'move_name': move.name, 'move_type': move.type
         } for move in data]
 
     def apply_selection(self, row):
@@ -118,4 +103,23 @@ class MovesGrid(SelectableGrid):
         Добавить движение в список
         """
         print(row.move_name)
+
+
+class MoveAdditionHead(GridLayout):
+    pass
+
+
+class GoAddPokemonMoves(Screen):
+
+    def __init__(self, data, prev_screen, **kwargs):
+        super().__init__(**kwargs)
+        self.data = data
+        self.prev_screen = prev_screen
+        self.fast_moves_selector = MovesGrid(moves_category='fast', view_class=SelectMoveRowLayout)
+        self.moves_selectors.add_widget(self.fast_moves_selector)
+        self.charge_moves_selector = MovesGrid(moves_category='charge', view_class=SelectMoveRowLayout)
+        self.moves_selectors.add_widget(self.charge_moves_selector)
+
+
+
 

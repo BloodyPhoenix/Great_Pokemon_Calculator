@@ -40,9 +40,15 @@ class RowLayout(BoxLayout, RecycleDataViewBehavior):
 
 class SelectableGrid(GridLayout):
     """
-    Класс сетки.
-    Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку
-    """
+        Класс сетки.
+        Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку
+        """
+
+    def __init__(self, view_class: RowLayout, **kwargs):
+        super().__init__(**kwargs)
+        self.rv.viewclass = view_class
+
+
 
     def apply_selection(self, row):
         """
@@ -56,9 +62,9 @@ class GridWithTitles(GridLayout):
     Класс сетки, к которому добавляются ещё две сетки: с заголовками и с данными. Заголовки всегда добавляются первыми
     """
 
-    def __init__(self, head: GridLayout, **kwargs):
+    def __init__(self, head: GridLayout, view_class: RowLayout, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(head)
-        self.data_widget = SelectableGrid()
+        self.data_widget = SelectableGrid(view_class=view_class)
         self.add_widget(self.data_widget)
 
