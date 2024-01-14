@@ -1,0 +1,47 @@
+#:kivy 2.1.0
+
+
+<ChooseMoveType>:
+    text: "Выберите тип движения"
+    values: root.values
+
+
+<ChooseMoveTypeElement>
+    text: "Выберите элемент"
+    values: root.values
+
+
+<MovesAddition>:
+    move_element: move_element
+    move_type: move_type
+    move_name: move_name
+    move_power_pwe: move_power_pwe
+    move_power_pwp: move_power_pwp
+    Widget:
+        GridLayout:
+            size: root.size
+            rows: 2
+            cols: 2
+            ChooseMoveType:
+                id: move_type
+            ChooseMoveTypeElement:
+                id: move_element
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Название движение"
+                TextInput:
+                    id: move_name
+            GridLayout:
+                rows: 2
+                cols: 2
+                Label:
+                    text: "Сила движения PvE"
+                TextInput:
+                    id: move_power_pwe
+                Label:
+                    text: "Сила движения PvP"
+                TextInput:
+                    id: move_power_pwp
+
+
