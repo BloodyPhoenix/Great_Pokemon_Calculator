@@ -1,4 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -77,6 +78,16 @@ class PokemonGoStatsAddition(FirstStepData):
             self.manager.switch_to(new_screen)
 
 
+class RemovableButton(Button):
+
+    def __init__(self, text: str, **kwargs):
+        super().__init__(**kwargs)
+        self.text = text
+
+    def on_release(self):
+        self.parent.remove_widget(self)
+
+
 class SelectMoveRowLayout(RowLayout):
     """Класс отдельного ряда в сетке"""
     pass
@@ -102,7 +113,10 @@ class MovesGrid(GridWithTitles):
         """
         Добавить движение в список
         """
-        print(row.move_name)
+        if self.moves_category == 'fast':
+            self.parent.parent.parent.fast_moves_chosen.add_widget(RemovableButton(text=row.move_name))
+        else:
+            self.parent.parent.parent.charge_moves_chosen.add_widget(RemovableButton(text=row.move_name))
 
 
 class MoveAdditionHead(GridLayout):

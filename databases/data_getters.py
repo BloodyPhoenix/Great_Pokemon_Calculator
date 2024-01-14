@@ -32,7 +32,7 @@ def go_moves_data_getter(move_type: str, move_category: str):
     local_seccion = sessionmaker(autoflush=True, autocommit=False, bind=engine)
     db = local_seccion()
     if move_type == 'any':
-        result = db.query(moves_db)
+        result = db.query(moves_db).order_by(moves_db.name.asc())
     else:
-        result = db.query(moves_db).where(moves_db.type == move_type)
+        result = db.query(moves_db).where(moves_db.type == move_type).order_by(moves_db.name.asc())
     return result
