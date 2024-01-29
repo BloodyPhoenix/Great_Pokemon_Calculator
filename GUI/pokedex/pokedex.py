@@ -249,9 +249,9 @@ class SelectUpdateMethod(Screen):
 
     def add_move(self):
         """Переводит на экран ручного добавления движения"""
-        from .moves_addition_pages import MovesAddition
+        from .moves_addition_pages import MovesAdditionStart
         screen_name = 'Move Adder'
-        addition_screen = MovesAddition(name=screen_name)
+        addition_screen = MovesAdditionStart(name=screen_name)
         self.manager.add_widget(addition_screen)
         self.manager.current = screen_name
 

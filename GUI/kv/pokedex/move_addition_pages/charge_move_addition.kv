@@ -1,0 +1,32 @@
+#:kivy 2.1.0
+
+<ChargeAdditionFast>:
+    speed: speed
+    charges_pve: charges_pve
+    energy_pvp: energy_pvp
+    Widget:
+        GridLayout:
+            width: root.width
+            height: root.height
+            padding: root.width * 0.05, root.height * 0.1, root.width * 0.05, root.height * 0.2
+            spacing: root.width * 0.05, root.height * 0.1
+            rows: 1
+            cols: 3
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    tex: "Скорость"
+                TextInput:
+                    id: speed
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    tex: "Заряды в PvE"
+                TextInput:
+                    id: charges_pve
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    tex: "Энергия в PvP"
+                TextInput:
+                    id:energy_pvp

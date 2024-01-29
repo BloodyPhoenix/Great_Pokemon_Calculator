@@ -1,4 +1,4 @@
-from .moves_addition import MovesAddition
+from .moves_addition import MovesAdditionStart
 
 
-__all__ = ['MovesAddition',]
+__all__ = ['MovesAdditionStart', ]

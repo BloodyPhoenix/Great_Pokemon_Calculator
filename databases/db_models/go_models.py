@@ -44,6 +44,23 @@ class FastMove(Base):
     speed_pvp: Mapped[float] = mapped_column(Float)
     pokemon: Mapped[List['Pokemon']] = relationship(secondary=FastMoveDetail, back_populates='fast_moves')
 
+    @classmethod
+    def upsert(cls, data, session):
+        current_move = session.query(cls).filter(cls.name == data['name']).first()
+        if current_move is None:
+            move = cls(
+                name=data['name'],
+                type=data['type'],
+                damage_pve=data['damage_pve'],
+                damage_pvp=data['damage_pvp'],
+                energy_pve=data['energy_pve'],
+                energy_pvp=data['energy_pvp'],
+                speed_pve=data['speed_pve'],
+                speed_pvp=data['speed_pvp']
+            )
+            session.add(move)
+            session.commit()
+
     def __str__(self):
         return f"""
 move name: {self.name}
@@ -62,6 +79,11 @@ class ChargeMove(Base):
     charges_pve: Mapped[int] = mapped_column(Integer)
     energy_pvp: Mapped[int] = mapped_column(Integer)
     pokemon: Mapped[List['Pokemon']] = relationship(secondary=ChargeMoveDetail, back_populates='charge_moves')
+
+
+    @classmethod
+    def upsert(cls, data, session):
+        pass
 
     def __str__(self):
         return f"""
@@ -98,6 +120,15 @@ class Pokemon(Base):
 
     @classmethod
     def upsert(cls, data, session, image_path, fast_moves, charge_moves):
+        """
+        Метод, который проверяет, есьт ли уже покемон в базе. Если есть, обновляет запись, если нет, создаёт новую.
+        :param data: данные о покемоне
+        :param session: текущая сессия
+        :param image_path: путь до файла с картинкой
+        :param fast_moves: список быстрых движений покемона
+        :param charge_moves: список заряжаемых движений покемона
+        :return: None
+        """
         from utils import count_cp_lvl_40, count_cp_lvl_50, count_stat_lvl_50, count_stat_lvl_40
         current_pokemon = session.query(cls).filter(cls.form_name == data['form_name']).first()
         if current_pokemon is None:
