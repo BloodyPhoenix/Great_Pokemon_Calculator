@@ -37,4 +37,26 @@
                     text: "Энергия в PvP"
                 TextInput:
                     id: energy_pvp
+        Button:
+            center_y: 75
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Назад"
+            on_release: root.go_back()
+        Button:
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Продолжить"
+            on_release: root.proceed()
+
 

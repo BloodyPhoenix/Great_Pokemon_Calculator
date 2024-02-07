@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.spinner import Spinner
 from sqlalchemy.orm import sessionmaker
 
+from GUI.custom_widgets import ConfirmationWidget
 from utils import TypeSelector
 
 
@@ -24,6 +25,7 @@ class MovesAdditionStart(Screen):
     def __init__(self, pokemon_data=None, **kwargs, ):
         super().__init__(**kwargs)
         self.pokemon_data = pokemon_data
+        self.rewrite = False
 
     def to_main(self):
         pass
@@ -90,21 +92,21 @@ class MoveAdditionFast(Screen):
         energy_pvp = self.energy_pvp.text
         error_message = ''
         if len(speed_pve) < 0:
-            error_message += 'Не заполнено поле \"Скорость в pve\"!'
-        elif speed_pve.isalpha:
-            error_message += "В поле \"Скорость в pve\" введено не число!"
+            error_message += 'Не заполнено поле \"Скорость в pve\"!\n'
+        elif speed_pve.isalpha():
+            error_message += "В поле \"Скорость в pve\" введено не число!\n"
         if len(speed_pvp) < 0:
-            error_message += 'Не заполнено поле \"Скорость в pvp\"!'
-        elif speed_pvp.isalpha:
-            error_message += "В поле \"Скорость в pvp\" введено не число!"
+            error_message += 'Не заполнено поле \"Скорость в pvp\"!\n'
+        elif speed_pvp.isalpha():
+            error_message += "В поле \"Скорость в pvp\" введено не число!\n"
         if len(energy_pve) < 0:
             error_message += 'Не заполнено поле \"Энергия в pve\"!'
-        elif energy_pve.isalpha:
-            error_message += "В поле \"Энергия в pve\" введено не число!"
+        elif energy_pve.isalpha():
+            error_message += "В поле \"Энергия в pve\" введено не число!\n"
         if len(energy_pvp) < 0:
-            error_message += 'Не заполнено поле \"Энергия в pvp\"!'
-        elif energy_pvp.isalpha:
-            error_message += "В поле \"Энергия в pvp\" введено не число!"
+            error_message += 'Не заполнено поле \"Энергия в pvp\"!\n'
+        elif energy_pvp.isalpha():
+            error_message += "В поле \"Энергия в pvp\" введено не число!\n"
         if len(error_message) > 0:
             popup = Popup(title="Ошибка ввода данных", content=Label(text=error_message, font_size=24),
                           size_hint=(None, None),
@@ -123,10 +125,29 @@ class MoveAdditionFast(Screen):
             engine = create_engine()
             local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
             session = local_session()
-            current_move = session.query(FastMove).filter(FastMove.name == self.data['name']).first()
+            current_move = session.query(FastMove).filter(FastMove.name == self.move_data['name']).first()
             if current_move:
-                pass
+                confirmed = False
+                popup_content = ConfirmationWidget(label_text="Такое движение уже есть в базе\nПерезаписать?")
+                popup = Popup(title="Повторное движение в базе",
+                              content=popup_content,
+                              size_hint=(None, None),
+                              size=(500, 500))
+                popup_content.cancel.bind(on_release=popup.dismiss)
+                popup_content.confirm_action.bind(on_release=self.rewrite)
+                popup.open()
+                print(confirmed)
             FastMove.upsert(session=session, data=self.move_data)
+
+    def rewrite(self, button):
+        pass
+
+
+    def to_main(self):
+        self.manager.current = 'main screen'
+
+    def go_back(self):
+        pass
 
 
 class MovesAdditionCharge(Screen):
