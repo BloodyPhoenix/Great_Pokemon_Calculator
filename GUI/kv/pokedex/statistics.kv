@@ -1,0 +1,44 @@
+<StatisticsType>:
+    text: "Выберите тип графика"
+
+
+<ChooseFirstType>:
+    text: "Выберите первый тип"
+
+
+<ChooseSecondType>:
+    text: "Выберите второй тип"
+
+
+<StatisticsScreen>:
+    statistics_type: statistics_type
+    first_type: first_type
+    second_type: second_type
+    statistics_widget: statistics_widget
+    Widget:
+        StatisticsType:
+            id: statistics_type
+            center_x: root.width * 0.2
+            center_y: root.height - root.height * 0.05
+            size: 225, 50
+        ChooseFirstType:
+            id: first_type
+            center_x: root.width * 0.5
+            center_y: root.height - root.height * 0.05
+            size: 225, 50
+        ChooseSecondType:
+            id: second_type
+            center_x: root.width * 0.8
+            center_y: root.height - root.height * 0.05
+            size: 225, 50
+        Button:
+            center_x: root.width * 0.5
+            center_y: root.height - root.height * 0.2
+            size: 300, 50
+            text: "Показать"
+            on_release: root.show()
+        Widget:
+            id: statistics_widget
+            size: root.width - root.width * 0.2, root.height - root.height * 0.4
+            center_y: root.center_y
+            center_x: root.center_x

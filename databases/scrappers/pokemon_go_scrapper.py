@@ -175,7 +175,11 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
         if type(info) == str and len(info) > 10:
             content.remove(info)
     content.insert(3, form_name)
-    return reformat_data(content)
+    try:
+        data = reformat_data(content)
+        return data
+    except IndexError:
+        return 'not released'
 
 
 def save_data(data: dict):

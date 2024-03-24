@@ -2,13 +2,14 @@ from kivy.clock import Clock
 from kivy.properties import BooleanProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
+
+from GUI.pokedex.statistics_settings import StatisticsScreen
 from databases import collect_data, get_data_from_database
 from kivy.uix.screenmanager import Screen
 from GUI.pokedex.pokemon_pages import DATA_GRIDS
@@ -185,6 +186,12 @@ class Pokedex(Screen):
         """
         new_data = self.name_filter(self.pokemon_name.text)
         self.update_data(new_data)
+
+    def statistics(self):
+        name = 'statistics_screen'
+        screen = StatisticsScreen(name=name)
+        self.manager.add_widget(screen)
+        self.manager.current = name
 
 
 class DataCollectorScreen(Screen):
