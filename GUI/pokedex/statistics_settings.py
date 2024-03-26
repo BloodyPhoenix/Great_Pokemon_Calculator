@@ -1,10 +1,17 @@
-from kivy.graphics import Rectangle
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.spinner import Spinner
 
-from utils import TypeSelector
+from utils import TypeSelector, get_colours
+
+
+def make_autopct(values):
+    def my_autopct(pct):
+        total = sum(values)
+        val = int(round(pct*total/100.0))
+        return '{p:.2f}%  ({v:d})'.format(p=pct,v=val)
+    return my_autopct
 
 
 class StatisticsType(Spinner):
@@ -91,19 +98,26 @@ class StatisticsScreen(Screen):
         elif statistics_type == "Количество от покемонов с тем же первым типом":
             second_types = dataframe["type_2"].unique()
             values = []
-            print(second_types)
             for second_type in second_types:
-                values.append(len(dataframe[dataframe["type_2"] == second_type]))
+                value = len(dataframe[dataframe["type_2"] == second_type])
+                values.append(value)
+            values.append(len(dataframe) - sum(values))
+            values.remove(0)
+            second_types = list(second_types)
+            second_types.remove(None)
+            second_types.append('monotype')
+            colours = get_colours(second_types, first_type)
             fig, ax = pyplot.subplots()
-            ax.pie(values, labels=second_types)
+            ax.pie(values, labels=second_types, autopct = make_autopct(values), pctdistance = 1.5, colors=colours)
         elif statistics_type == "Количество от покемонов с тем же вторым типом":
             first_types = dataframe["type_1"].unique()
             values = []
             print(first_types)
             for first_type in first_types:
                 values.append(len(dataframe[dataframe["type_1"] == first_type]))
+            colours = get_colours(first_types, second_type)
             fig, ax = pyplot.subplots()
-            ax.pie(values, labels=first_types)
+            ax.pie(values, labels=first_types, colors=colours)
         if statistics_type == "График распределения по СР":
             dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
             graph = dataframe['max_cp_40']
