@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
@@ -49,8 +51,13 @@ class StatisticsScreen(Screen):
             error_message += "Не выбран тип графика!\n"
         if first_type == "Выберите первый тип":
             error_message += "Не выбран первый тип покемонов!\n"
+        if first_type == "Не учитывать" and statistics_type == "Количество от покемонов с тем же первым типом":
+            error_message += "Невозможно посчитать количество покемонов от первого типа, не задав его!\n"
         if second_type == 'Выберите второй тип':
             error_message += "Не выбран второй тип покемонов!\n"
+        if ((second_type == "Не учитывать" or second_type == "Монотип")
+                and statistics_type == "Количество от покемонов с тем же первым типом"):
+            error_message += "Невозможно посчитать количество покемонов от второго типа, не задав его!\n"
         if len(error_message) > 0:
             error_window = Popup(title="Ошибка ввода данных", content=Label(text=error_message, font_size=24),
                           size_hint=(None, None),
@@ -60,6 +67,22 @@ class StatisticsScreen(Screen):
             self.get_data(statistics_type, first_type, second_type)
 
     def get_data(self, statistics_type: str, first_type: str, second_type: str):
+        if statistics_type == "Количество от всех покемонов":
+            new_widget = self.cuantity_from_total(first_type, second_type)
+        elif statistics_type == "Количество от покемонов с тем же первым типом":
+            new_widget = self.cuantity_from_primary(first_type)
+        elif statistics_type == "Количество от покемонов с тем же вторым типом":
+            new_widget = self.cuantity_from_second(second_type)
+        else:
+            new_widget = self.CP(first_type, second_type)
+        popup = Popup(
+            title="", content=new_widget,
+            size_hint=(None, None),
+            size=(500, 500)
+        )
+        popup.open()
+
+    def cuantity_from_total(self, first_type: str, second_type: str):
         from databases import create_engine, GoPokemon
         from sqlalchemy.orm.session import sessionmaker
         import pandas
@@ -68,70 +91,136 @@ class StatisticsScreen(Screen):
         engine = create_engine()
         local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
         session = local_session()
-        if statistics_type == "Количество от всех покемонов":
-            compare_data = session.query(GoPokemon)
-        elif statistics_type == "Количество от покемонов с тем же первым типом":
-            compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type)
-        elif statistics_type == "Количество от покемонов с тем же вторым типом":
-            compare_data = session.query(GoPokemon).where(GoPokemon.type_2 == second_type)
-        else:
-            if second_type == "Монотип":
-                second_type = None
-            if second_type == "Не учитывать":
-                compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type)
-            else:
-                compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type,
-                                                              GoPokemon.type_2 == second_type)
+        compare_data = session.query(GoPokemon)
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
-        if statistics_type == "Количество от всех покемонов":
-            if second_type == "Монотип":
-                second_type = None
-            if second_type == "Не учитывать":
-                compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type)
+        if second_type == "Монотип":
+            second_type = None
+        if second_type == "Не учитывать":
+            if self.ignore_type_order.active:
+                types_selection = (GoPokemon.type_1 == first_type) | (GoPokemon.type_2 == first_type)
             else:
-                compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type,
-                                                              GoPokemon.type_2 == second_type)
-            data_1 = len(pandas.read_sql(compare_data.statement, session.bind))
-            data_2 = len(dataframe) - data_1
-            fig, ax = pyplot.subplots()
-            ax.pie([data_1,data_2], labels=[f'{first_type} {second_type}', 'others'], explode=[0.25, 0.25])
-        elif statistics_type == "Количество от покемонов с тем же первым типом":
-            second_types = dataframe["type_2"].unique()
-            values = []
-            for second_type in second_types:
-                value = len(dataframe[dataframe["type_2"] == second_type])
-                values.append(value)
-            values.append(len(dataframe) - sum(values))
-            values.remove(0)
-            second_types = list(second_types)
-            second_types.remove(None)
-            second_types.append('monotype')
-            colours = get_colours(second_types, first_type)
-            fig, ax = pyplot.subplots()
-            ax.pie(values, labels=second_types, autopct = make_autopct(values), pctdistance = 1.5, colors=colours)
-        elif statistics_type == "Количество от покемонов с тем же вторым типом":
-            first_types = dataframe["type_1"].unique()
-            values = []
-            print(first_types)
-            for first_type in first_types:
-                values.append(len(dataframe[dataframe["type_1"] == first_type]))
-            colours = get_colours(first_types, second_type)
-            fig, ax = pyplot.subplots()
-            ax.pie(values, labels=first_types, colors=colours)
-        if statistics_type == "График распределения по СР":
-            dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
-            graph = dataframe['max_cp_40']
-            pyplot.hist(graph)
-            pyplot.xlabel("CP")
-            pyplot.ylabel('Pokemon')
-            pyplot.grid(True, color='lightgray')
-        new_widget = FigureCanvas(pyplot.gcf())
-        popup = Popup(
-            title="", content=new_widget,
-            size_hint=(None, None),
-            size=(500, 500)
-        )
-        popup.open()
+                types_selection = GoPokemon.type_1 == first_type
+        elif first_type == "Не учитывать":
+            if self.ignore_type_order.active:
+                types_selection = (GoPokemon.type_2 == second_type) | (GoPokemon.type_1 == second_type)
+            else:
+                types_selection = GoPokemon.type_2 == second_type
+        elif self.ignore_type_order.active:
+            types_selection = (
+                    ((GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)) |
+                    ((GoPokemon.type_1 == second_type) & (GoPokemon.type_2 == first_type))
+            )
+        else:
+            types_selection = GoPokemon.type_1 == first_type, GoPokemon.type_2 == second_type
+        compare_data = session.query(GoPokemon).where(types_selection)
+        data_1 = len(pandas.read_sql(compare_data.statement, session.bind))
+        data_2 = len(dataframe) - data_1
+        values = [data_1, data_2]
+        fig, ax = pyplot.subplots()
+        ax.pie(values, labels=[f'{first_type} {second_type}', 'others'], explode=[0.25, 0.25],
+               autopct=make_autopct(values))
+        return FigureCanvas(pyplot.gcf())
+
+    def cuantity_from_primary(self, first_type: str):
+        from databases import create_engine, GoPokemon
+        from sqlalchemy.orm.session import sessionmaker
+        import pandas
+        from kivy_garden.matplotlib.backend_kivyagg import FigureCanvas
+        from matplotlib import pyplot
+        engine = create_engine()
+        local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+        session = local_session()
+        if self.ignore_type_order.active:
+            type_selector = ((GoPokemon.type_1 == first_type) | (GoPokemon.type_2 == first_type))
+            compare_data = session.query(GoPokemon).where(type_selector)
+        else:
+            compare_data = session.query(GoPokemon).where(GoPokemon.type_1 == first_type)
+        dataframe = pandas.read_sql(compare_data.statement, session.bind)
+        second_types = dataframe["type_2"].unique()
+        values = defaultdict(int)
+        for second_type in second_types:
+            if second_type == first_type:
+                continue
+            value = len(dataframe[dataframe["type_2"] == second_type])
+            values[second_type] += value
+        if self.ignore_type_order.active:
+            first_types = dataframe['type_1'].unique()
+            for current_type in first_types:
+                if current_type == first_type:
+                    continue
+                value = len(dataframe[dataframe["type_1"] == current_type])
+                values[current_type] += value
+        values['monotype'] = len(dataframe) - sum(values.values())
+        values.pop(None)
+        second_types = []
+        numbers = []
+        for key, value in values.items():
+            second_types.append(key)
+            numbers.append(value)
+        colours = get_colours(second_types, first_type)
+        fig, ax = pyplot.subplots()
+        ax.pie(numbers, labels=second_types, autopct=make_autopct(numbers), pctdistance=1.5, colors=colours)
+        return FigureCanvas(pyplot.gcf())
+
+    def cuantity_from_second(self, second_type: str):
+        from databases import create_engine, GoPokemon
+        from sqlalchemy.orm.session import sessionmaker
+        import pandas
+        from kivy_garden.matplotlib.backend_kivyagg import FigureCanvas
+        from matplotlib import pyplot
+        engine = create_engine()
+        local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+        session = local_session()
+        if self.ignore_type_order.active:
+            type_selector = (GoPokemon.type_1 == second_type) | (GoPokemon.type_2 == second_type)
+            compare_data = session.query(GoPokemon).where(type_selector)
+        else:
+            compare_data = session.query(GoPokemon).where(GoPokemon.type_2 == second_type)
+        dataframe = pandas.read_sql(compare_data.statement, session.bind)
+        first_types = dataframe["type_1"].unique()
+        values = []
+        print(first_types)
+        for first_type in first_types:
+            values.append(len(dataframe[dataframe["type_1"] == first_type]))
+        colours = get_colours(first_types, second_type)
+        fig, ax = pyplot.subplots()
+        ax.pie(values, labels=first_types, colors=colours)
+        return FigureCanvas(pyplot.gcf())
+
+    def CP(self, first_type: str, second_type: str):
+        from databases import create_engine, GoPokemon
+        from sqlalchemy.orm.session import sessionmaker
+        import pandas
+        from kivy_garden.matplotlib.backend_kivyagg import FigureCanvas
+        from matplotlib import pyplot
+        engine = create_engine()
+        local_session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+        session = local_session()
+        if second_type == "Монотип":
+            second_type = None
+        if self.ignore_type_order:
+            if second_type == "Не учитывать":
+                type_selector = (GoPokemon.type_1 == first_type) | (GoPokemon.type_2 == first_type)
+            else:
+                type_selector = ((
+                                         (GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)) |
+                                 ((GoPokemon.type_1 == second_type) &
+                                  (GoPokemon.type_2 == first_type)))
+        elif second_type == "Не учитывать":
+            type_selector = (GoPokemon.type_1 == first_type)
+        else:
+            type_selector = (GoPokemon.type_1 == first_type, GoPokemon.type_2 == second_type)
+        compare_data = session.query(GoPokemon).where(type_selector)
+        dataframe = pandas.read_sql(compare_data.statement, session.bind)
+        dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
+        graph = dataframe['max_cp_40']
+        pyplot.hist(graph)
+        pyplot.xlabel("CP")
+        pyplot.ylabel('Pokemon')
+        pyplot.grid(True, color='lightgray')
+        return FigureCanvas(pyplot.gcf())
+
+
 
 
 

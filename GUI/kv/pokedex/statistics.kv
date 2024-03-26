@@ -15,25 +15,34 @@
     first_type: first_type
     second_type: second_type
     statistics_widget: statistics_widget
+    ignore_type_order: ignore_type_order
     Widget:
         StatisticsType:
             id: statistics_type
-            center_x: root.width * 0.2
+            center_x: root.width * 0.5
             center_y: root.height - root.height * 0.05
-            size: 225, 50
+            size: 750, 50
         ChooseFirstType:
             id: first_type
-            center_x: root.width * 0.5
-            center_y: root.height - root.height * 0.05
-            size: 225, 50
+            center_x: root.width * 0.3
+            center_y: root.height - root.height * 0.15
+            size: 320, 50
         ChooseSecondType:
             id: second_type
-            center_x: root.width * 0.8
-            center_y: root.height - root.height * 0.05
-            size: 225, 50
+            center_x: root.width * 0.7
+            center_y: root.height - root.height * 0.15
+            size: 320, 50
+        Label:
+            text: "Игнорировать порядок типов"
+            center_x: root.width * 0.3
+            center_y: root.height - root.height * 0.25
+        CheckBox:
+            id: ignore_type_order
+            center_x: root.width * 0.475
+            center_y: root.height - root.height * 0.25
         Button:
             center_x: root.width * 0.5
-            center_y: root.height - root.height * 0.2
+            center_y: root.height - root.height * 0.35
             size: 300, 50
             text: "Показать"
             on_release: root.show()
