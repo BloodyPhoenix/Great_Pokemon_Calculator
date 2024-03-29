@@ -55,3 +55,24 @@
             size: root.width - root.width * 0.2, root.height - root.height * 0.4
             center_y: root.height * 0.4
             center_x: root.center_x
+        Button:
+            center_y: 50
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 50
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            center_y: 50
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 50
+            text: "Выбор игры"
+            on_release: root.game_selection()
+        Button:
+            center_y: 50
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 50
+            text: "Покедекс"
+            on_release: root.pokedex()

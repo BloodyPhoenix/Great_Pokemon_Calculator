@@ -93,7 +93,7 @@ class PokemonStartAddition(Screen):
     def pokedex(self):
         self.manager.current = 'Pokemon Go pokedex'
 
-    def main_menu(self):
+    def to_main(self):
         self.manager.current = 'main screen'
 
 

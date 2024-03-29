@@ -50,6 +50,15 @@ class StatisticsLayout(BoxLayout):
 
 class StatisticsScreen(Screen):
 
+    def game_selection(self):
+        self.manager.current = 'pokedex game selection'
+
+    def pokedex(self):
+        self.manager.current = 'Pokemon Go pokedex'
+
+    def to_main(self):
+        self.manager.current = 'main screen'
+
     def show(self):
         statistics_type = self.statistics_type.text
         first_type = self.first_type.text
@@ -217,9 +226,15 @@ class StatisticsScreen(Screen):
         session = local_session()
         if second_type == "Монотип":
             second_type = None
-        if self.ignore_type_order:
+        if first_type == "Не учитывать" and second_type == "Не учитывать":
+            type_selector = None
+        elif first_type == "Не учитывать":
+            type_selector = (GoPokemon.type_2 == second_type)
+        elif self.ignore_type_order:
             if second_type == "Не учитывать":
                 type_selector = (GoPokemon.type_1 == first_type) | (GoPokemon.type_2 == first_type)
+            elif first_type == "Не учитывать":
+                type_selector = (GoPokemon.type_1 == second_type) | (GoPokemon.type_2 == second_type)
             else:
                 type_selector = ((
                                          (GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)) |
@@ -229,7 +244,10 @@ class StatisticsScreen(Screen):
             type_selector = (GoPokemon.type_1 == first_type)
         else:
             type_selector = (GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)
-        compare_data = session.query(GoPokemon).where(type_selector)
+        if type_selector is not None:
+            compare_data = session.query(GoPokemon).where(type_selector)
+        else:
+            compare_data = session.query(GoPokemon)
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
         dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
         graph = dataframe['max_cp_40']
