@@ -233,6 +233,9 @@ class StatisticsScreen(Screen):
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
         dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
         graph = dataframe['max_cp_40']
+        figure = pyplot.gcf()
+        if figure:
+            figure.clear(keep_observers=False)
         pyplot.hist(graph)
         pyplot.xlabel("CP")
         pyplot.ylabel('Pokemon')
