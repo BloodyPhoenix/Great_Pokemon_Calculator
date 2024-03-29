@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
@@ -40,6 +41,13 @@ class ChooseSecondType(TypeSelector):
         self.values.append("Монотип")
 
 
+class StatisticsLayout(BoxLayout):
+
+    def update(self, new_widget):
+        self.clear_widgets()
+        self.add_widget(new_widget)
+
+
 class StatisticsScreen(Screen):
 
     def show(self):
@@ -52,11 +60,11 @@ class StatisticsScreen(Screen):
         if first_type == "Выберите первый тип":
             error_message += "Не выбран первый тип покемонов!\n"
         if first_type == "Не учитывать" and statistics_type == "Количество от покемонов с тем же первым типом":
-            error_message += "Невозможно посчитать количество покемонов от первого типа, не задав его!\n"
+            error_message += "Невозможно посчитать количество покемонов\n от первого типа, не задав его!\n"
         if second_type == 'Выберите второй тип':
             error_message += "Не выбран второй тип покемонов!\n"
         if ((second_type == "Не учитывать" or second_type == "Монотип")
-                and statistics_type == "Количество от покемонов с тем же первым типом"):
+                and statistics_type == "Количество от покемонов с тем же\n вторым типом"):
             error_message += "Невозможно посчитать количество покемонов от второго типа, не задав его!\n"
         if len(error_message) > 0:
             error_window = Popup(title="Ошибка ввода данных", content=Label(text=error_message, font_size=24),
@@ -64,7 +72,8 @@ class StatisticsScreen(Screen):
                           size=(500, 500))
             error_window.open()
         else:
-            self.get_data(statistics_type, first_type, second_type)
+            new_widget = self.get_data(statistics_type, first_type, second_type)
+            self.statistics_layout.update(new_widget)
 
     def get_data(self, statistics_type: str, first_type: str, second_type: str):
         if statistics_type == "Количество от всех покемонов":
@@ -75,12 +84,7 @@ class StatisticsScreen(Screen):
             new_widget = self.cuantity_from_second(second_type)
         else:
             new_widget = self.CP(first_type, second_type)
-        popup = Popup(
-            title="", content=new_widget,
-            size_hint=(None, None),
-            size=(500, 500)
-        )
-        popup.open()
+        return new_widget
 
     def cuantity_from_total(self, first_type: str, second_type: str):
         from databases import create_engine, GoPokemon

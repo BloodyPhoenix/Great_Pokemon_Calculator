@@ -10,11 +10,15 @@
     text: "Выберите второй тип"
 
 
+<StatisticsLayout>:
+    orientation: 'vertical'
+
+
 <StatisticsScreen>:
     statistics_type: statistics_type
     first_type: first_type
     second_type: second_type
-    statistics_widget: statistics_widget
+    statistics_layout: statistics_layout
     ignore_type_order: ignore_type_order
     Widget:
         StatisticsType:
@@ -34,20 +38,20 @@
             size: 320, 50
         Label:
             text: "Игнорировать порядок типов"
-            center_x: root.width * 0.3
+            center_x: root.width * 0.25
             center_y: root.height - root.height * 0.25
         CheckBox:
             id: ignore_type_order
-            center_x: root.width * 0.475
+            center_x: root.width * 0.4
             center_y: root.height - root.height * 0.25
         Button:
-            center_x: root.width * 0.5
-            center_y: root.height - root.height * 0.35
+            center_x: root.width * 0.70
+            center_y: root.height - root.height * 0.25
             size: 300, 50
             text: "Показать"
             on_release: root.show()
-        Widget:
-            id: statistics_widget
+        StatisticsLayout:
+            id: statistics_layout
             size: root.width - root.width * 0.2, root.height - root.height * 0.4
-            center_y: root.center_y
+            center_y: root.height * 0.4
             center_x: root.center_x
