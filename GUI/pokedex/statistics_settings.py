@@ -111,7 +111,7 @@ class StatisticsScreen(Screen):
                     ((GoPokemon.type_1 == second_type) & (GoPokemon.type_2 == first_type))
             )
         else:
-            types_selection = GoPokemon.type_1 == first_type, GoPokemon.type_2 == second_type
+            types_selection = (GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)
         compare_data = session.query(GoPokemon).where(types_selection)
         data_1 = len(pandas.read_sql(compare_data.statement, session.bind))
         data_2 = len(dataframe) - data_1
@@ -178,13 +178,28 @@ class StatisticsScreen(Screen):
             compare_data = session.query(GoPokemon).where(GoPokemon.type_2 == second_type)
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
         first_types = dataframe["type_1"].unique()
-        values = []
-        print(first_types)
+        values = defaultdict(int)
         for first_type in first_types:
-            values.append(len(dataframe[dataframe["type_1"] == first_type]))
-        colours = get_colours(first_types, second_type)
+            if first_type == second_type:
+                continue
+            value = len(dataframe[dataframe["type_1"] == first_type])
+            values[first_type] += value
+        if self.ignore_type_order.active:
+            second_types = dataframe['type_2'].unique()
+            for current_type in second_types:
+                if current_type == second_type:
+                    continue
+                value = len(dataframe[dataframe["type_2"] == current_type])
+                values[current_type] += value
+            values.pop(None)
+        second_types = []
+        numbers = []
+        for key, value in values.items():
+            second_types.append(key)
+            numbers.append(value)
+        colours = get_colours(second_types, second_type)
         fig, ax = pyplot.subplots()
-        ax.pie(values, labels=first_types, colors=colours)
+        ax.pie(numbers, labels=second_types, autopct=make_autopct(numbers), pctdistance=1.5, colors=colours)
         return FigureCanvas(pyplot.gcf())
 
     def CP(self, first_type: str, second_type: str):
@@ -209,7 +224,7 @@ class StatisticsScreen(Screen):
         elif second_type == "Не учитывать":
             type_selector = (GoPokemon.type_1 == first_type)
         else:
-            type_selector = (GoPokemon.type_1 == first_type, GoPokemon.type_2 == second_type)
+            type_selector = (GoPokemon.type_1 == first_type) & (GoPokemon.type_2 == second_type)
         compare_data = session.query(GoPokemon).where(type_selector)
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
         dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
