@@ -290,3 +290,4 @@ def pokemon_go_scrapper(proceed_screen: Screen):
     from GUI import Pokedex
     proceed_screen.manager.add_widget(Pokedex(game='Pokemon_GO', name='Pokemon GO pokedex'))
     proceed_screen.manager.current = 'Pokemon GO pokedex'
+
