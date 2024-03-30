@@ -24,6 +24,9 @@ class StatisticsType(Spinner):
         self.values.append("Количество от покемонов с тем же первым типом")
         self.values.append("Количество от покемонов с тем же вторым типом")
         self.values.append("График распределения по СР")
+        self.values.append("График распределения по атаке")
+        self.values.append("График распределения по защите")
+        self.values.append("График распределения по жизням")
 
 
 class ChooseFirstType(TypeSelector):
@@ -92,7 +95,7 @@ class StatisticsScreen(Screen):
         elif statistics_type == "Количество от покемонов с тем же вторым типом":
             new_widget = self.cuantity_from_second(second_type)
         else:
-            new_widget = self.CP(first_type, second_type)
+            new_widget = self.stats(first_type, second_type)
         return new_widget
 
     def cuantity_from_total(self, first_type: str, second_type: str):
@@ -215,7 +218,7 @@ class StatisticsScreen(Screen):
         ax.pie(numbers, labels=second_types, autopct=make_autopct(numbers), pctdistance=1.5, colors=colours)
         return FigureCanvas(pyplot.gcf())
 
-    def CP(self, first_type: str, second_type: str):
+    def stats(self, first_type: str, second_type: str):
         from databases import create_engine, GoPokemon
         from sqlalchemy.orm.session import sessionmaker
         import pandas
@@ -249,13 +252,28 @@ class StatisticsScreen(Screen):
         else:
             compare_data = session.query(GoPokemon)
         dataframe = pandas.read_sql(compare_data.statement, session.bind)
-        dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
-        graph = dataframe['max_cp_40']
+        statistics_type = self.statistics_type.text
+        if "атак" in statistics_type:
+            dataframe['max_attack_40'] = dataframe['max_attack_40'].astype('int64')
+            graph = dataframe['max_attack_40']
+            label = 'attack'
+        elif "защит" in statistics_type:
+            dataframe['max_defence_40'] = dataframe['max_defence_40'].astype('int64')
+            graph = dataframe['max_defence_40']
+            label = 'defence'
+        elif "жизн" in statistics_type:
+            dataframe['max_hp_40'] = dataframe['max_hp_40'].astype('int64')
+            graph = dataframe['max_hp_40']
+            label = 'HP'
+        else:
+            dataframe['max_cp_40'] = dataframe['max_cp_40'].astype('int64')
+            graph = dataframe['max_cp_40']
+            label = 'CP'
         figure = pyplot.gcf()
         if figure:
             figure.clear(keep_observers=False)
         pyplot.hist(graph)
-        pyplot.xlabel("CP")
+        pyplot.xlabel(label)
         pyplot.ylabel('Pokemon')
         pyplot.grid(True, color='lightgray')
         return FigureCanvas(pyplot.gcf())
