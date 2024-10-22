@@ -1,0 +1,73 @@
+#:kivy 2.1.0
+
+
+<ChooseMoveType>:
+    text: "Выберите тип движения"
+    values: root.values
+
+
+<ChooseMoveTypeElement>
+    text: "Выберите элемент"
+    values: root.values
+
+
+<MovesAdditionStart>:
+    move_element: move_element
+    move_type: move_type
+    move_name: move_name
+    move_power_pwe: move_power_pwe
+    move_power_pwp: move_power_pwp
+    Widget:
+        GridLayout:
+            padding: root.width * 0.05, root.height * 0.1, root.width * 0.05, root.height * 0.2
+            spacing: root.width * 0.05, root.height * 0.1
+            size: root.size
+            rows: 2
+            cols: 2
+            ChooseMoveType:
+                id: move_type
+            ChooseMoveTypeElement:
+                id: move_element
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Название движение"
+                TextInput:
+                    id: move_name
+            GridLayout:
+                rows: 2
+                cols: 2
+                Label:
+                    text: "Сила движения PvE"
+                TextInput:
+                    id: move_power_pwe
+                Label:
+                    text: "Сила движения PvP"
+                TextInput:
+                    id: move_power_pwp
+        Button:
+            id: to_main
+            center_y: 75
+            center_x: root.width / 4
+            font_size: 24
+            size: 200, 75
+            text: "Назад"
+            on_release: root.go_back()
+        Button:
+            id: game_selection
+            center_y: 75
+            center_x: root.width / 2
+            font_size: 24
+            size: 200, 75
+            text: "Главное меню"
+            on_release: root.to_main()
+        Button:
+            id: update
+            center_y: 75
+            center_x: root.width * 0.75
+            font_size: 24
+            size: 200, 75
+            text: "Продолжить"
+            on_release: root.proceed()
+
+

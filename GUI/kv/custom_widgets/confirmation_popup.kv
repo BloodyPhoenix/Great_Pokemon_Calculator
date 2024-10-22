@@ -1,0 +1,24 @@
+#:kivy 2.1.0
+
+<ConfirmationWidget>:
+    label_text: ''
+    cancel: cancel
+    confirm_action: confirm_action
+    Widget:
+        Label:
+            text: root.label_text
+            font_size: 24
+            center_x: root.width * 0.5
+            center_y: root.height * 0.6
+        Button:
+            id: cancel
+            text: "Отмена"
+            center_y: root.height * 0.2
+            center_x: root.width * 0.3
+            size: 200, 75
+        Button:
+            id: confirm_action
+            text: "Подтвердить"
+            center_y: root.height * 0.2
+            center_x: root.width * 0.8
+            size: 200, 75

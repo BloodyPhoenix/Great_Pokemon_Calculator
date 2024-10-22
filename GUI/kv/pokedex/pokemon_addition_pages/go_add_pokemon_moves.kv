@@ -1,0 +1,54 @@
+#:kivy 2.1.0
+
+<SelectMoveRowLayout>:
+    move_name: ''
+    move_type: ''
+    orientation: 'horizontal'
+    Label:
+        text: root.move_name
+    Label:
+        text: root.move_type
+
+
+<MoveAdditionHead>
+    cols: 2
+    rows: 1
+    size_hint_y: 0.1
+    Label:
+        text: 'Move name'
+    Label:
+        text: 'Move type'
+
+
+<GoAddPokemonMoves>:
+    moves_selectors: moves_selectors
+    fast_moves_chosen: fast_moves_chosen
+    charge_moves_chosen: charge_moves_chosen
+    GridLayout:
+        cols: 1
+        rows: 2
+        row_default_height: root.height * 0.5
+        row_force_default: True
+        GridLayout:
+            size_hint: None, None
+            size: root.width, root.height * 0.5
+            rows: 1
+            cols: 2
+            BoxLayout:
+                id: fast_moves_chosen
+                orientation: 'vertical'
+                Label:
+                    text: "Fast Moves"
+            BoxLayout:
+                id: charge_moves_chosen
+                orientation: 'vertical'
+                Label:
+                    text: "Charge Moves"
+        GridLayout:
+            padding: 0, 0, 0, root.height * 0.1
+            spacing: root.width * 0.05, 0
+            id: moves_selectors
+            rows: 1
+            cols: 2
+            row_default_height: self.height
+            row_force_default: True

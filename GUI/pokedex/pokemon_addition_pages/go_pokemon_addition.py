@@ -1,7 +1,11 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
+
+from GUI.custom_widgets import GridWithTitles, RowLayout, FirstStepData
 
 
 class StatsAdditionLayout(BoxLayout):
@@ -9,28 +13,37 @@ class StatsAdditionLayout(BoxLayout):
     pass
 
 
-class PokemonGoStatsAddition(Screen):
+class PokemonGoStatsAddition(FirstStepData):
     """Класс для добавления параметров атаки, защиты, ХП и СР для покемонов в Pokemon Go"""
 
-    def __init__(self, data, first_step_grid, **kwargs):
-        super().__init__(**kwargs)
-        self.data = data
-        self.first_step_grid = first_step_grid
-        self.main_layout.add_widget(self.first_step_grid)
-        self.stats = StatsAdditionLayout()
-        self.main_layout.add_widget(self.stats)
+    def on_pre_enter(self, *args):
+        super().on_pre_enter(*args)
+        if 'hp' in self.data.keys():
+            self.stats.base_hp.text = self.data['hp']
+        if 'attack' in self.data.keys():
+            self.stats.base_attack.text = self.data['attack']
+        if 'defence' in self.data.keys():
+            self.stats.base_defence.text = self.data['defence']
 
     def to_main(self):
-        pass
+        self.manager.current = 'main screen'
 
     def pokedex(self):
-        pass
+        self.manager.current = 'Pokemon Go pokedex'
 
     def game_selection(self):
-        pass
+        self.manager.current = 'pokedex game selection'
 
     def go_back(self):
-        pass
+        if len(self.stats.base_hp.text) > 1 and self.stats.base_hp.text.isdigit():
+            self.data['hp'] = self.stats.base_hp.text
+        if len(self.stats.base_attack.text) > 1 and self.stats.base_attack.text.isdigit():
+            self.data['attack'] = self.stats.base_attack.text
+        if len(self.stats.base_defence.text) > 1 and self.stats.base_defence.text.isdigit():
+            self.data['defence'] = self.stats.base_defence.text
+        self.prev_screen.data = self.data
+        self.data = self.data
+        self.manager.switch_to(self.prev_screen)
 
     def proceed(self):
         """
@@ -38,17 +51,17 @@ class PokemonGoStatsAddition(Screen):
         Если ошибок нет, переводит на следующее окно
         """
         mistake = ''
-        if len(self.base_hp.text) < 1:
+        if len(self.stats.base_hp.text) < 1:
             mistake += "Не введено базовое значение НР\n"
-        elif self.base_hp.text.isalpha():
+        elif self.stats.base_hp.text.isalpha():
             mistake += "В поле \"Базовое НР\" введено не число\n"
-        if len(self.base_attack.text) < 1:
+        if len(self.stats.base_attack.text) < 1:
             mistake += "Не введено базовое значение атаки\n"
-        elif self.base_attack.text.isalpha():
+        elif self.stats.base_attack.text.isalpha():
             mistake += "В поле \"Базовая атака\" введено не число\n"
-        if len(self.base_defence.text) < 1:
+        if len(self.stats.base_defence.text) < 1:
             mistake += "Не введено базовое значение защиты\n"
-        elif self.base_defence.text.isalpha():
+        elif self.stats.base_defence.text.isalpha():
             mistake += "В поле \"Базовая защита\" введено не число\n"
         if len(mistake) > 0:
             popup = Popup(title="Ошибка ввода данных", content=Label(text=mistake, font_size=24),
@@ -56,4 +69,71 @@ class PokemonGoStatsAddition(Screen):
                           size=(500, 500))
             popup.open()
         else:
-            pass
+            self.data['hp'] = self.stats.base_hp.text
+            self.data['attack'] = self.stats.base_attack.text
+            self.data['defence'] = self.stats.base_defence.text
+            new_screen_name = 'go pokemon add moves'
+            new_screen = GoAddPokemonMoves(name=new_screen_name, data=self.data, prev_screen=self)
+            self.manager.add_widget(new_screen)
+            self.manager.switch_to(new_screen)
+
+
+class RemovableButton(Button):
+
+    def __init__(self, text: str, **kwargs):
+        super().__init__(**kwargs)
+        self.text = text
+
+    def on_release(self):
+        self.parent.remove_widget(self)
+
+
+class SelectMoveRowLayout(RowLayout):
+    """Класс отдельного ряда в сетке"""
+    pass
+
+
+class MovesGrid(GridWithTitles):
+    """
+    Класс сетки движений. Получает данные из базы и заполняет ряды
+    """
+    def __init__(self, moves_category, **kwargs):
+        head = MoveAdditionHead()
+        super().__init__(head=head, **kwargs)
+        self.moves_category = moves_category
+        global data
+        from databases import moves_getters_dict
+        data_getter = moves_getters_dict['Pokemon Go']
+        data = data_getter('any', self.moves_category)
+        self.data_widget.rv.scroll_type = ['bars', 'content']
+        self.data_widget.rv.data = [{'move_name': move.name, 'move_type': move.type
+        } for move in data]
+
+    def apply_selection(self, row):
+        """
+        Добавить движение в список
+        """
+        if self.moves_category == 'fast':
+            self.parent.parent.parent.fast_moves_chosen.add_widget(RemovableButton(text=row.move_name))
+        else:
+            self.parent.parent.parent.charge_moves_chosen.add_widget(RemovableButton(text=row.move_name))
+
+
+class MoveAdditionHead(GridLayout):
+    pass
+
+
+class GoAddPokemonMoves(Screen):
+
+    def __init__(self, data, prev_screen, **kwargs):
+        super().__init__(**kwargs)
+        self.data = data
+        self.prev_screen = prev_screen
+        self.fast_moves_selector = MovesGrid(moves_category='fast', view_class=SelectMoveRowLayout)
+        self.moves_selectors.add_widget(self.fast_moves_selector)
+        self.charge_moves_selector = MovesGrid(moves_category='charge', view_class=SelectMoveRowLayout)
+        self.moves_selectors.add_widget(self.charge_moves_selector)
+
+
+
+
