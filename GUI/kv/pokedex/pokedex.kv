@@ -1,5 +1,4 @@
 #:kivy 2.1.0
-
 <Pokedex>:
     pokemon_name: pokemon_name
     Widget:
@@ -52,7 +51,7 @@
             on_release: root.update()
 
 
-<PokedexRowLayout>:
+<RowLayout>:
     form: form_id
     image: ''
     pokedex_number: ''
@@ -79,24 +78,45 @@
         text: root.cp_50
 
 
-<PokedexHead>:
-    cols: 7
-    rows: 1
-    size_hint_y: 0.1
-    Label:
-        text: 'Image'
-    Label:
-        text: 'Number'
-    Label:
-        text: 'Form name'
-    Label
-        text: 'Type 1'
-    Label
-        text: 'Type 2'
-    Label:
-        text: 'Max CP lvl 40'
-    Label:
-        text: 'Max CP lvl 50'
+
+<PokedexGrid>:
+    rv: rv_id
+    cols:  1
+    rows: 2
+    padding: 0, root.height * 0.1, 0, root.height * 0.2
+    GridLayout:
+        cols: 7
+        rows: 1
+        size_hint_y: 0.1
+        Label:
+            text: 'Image'
+        Label:
+            text: 'Number'
+        Label:
+            text: 'Form name'
+        Label
+            text: 'Type 1'
+        Label
+            text: 'Type 2'
+        Label:
+            text: 'Max CP lvl 40'
+        Label:
+            text: 'Max CP lvl 50'
+    GridLayout: # data
+        cols: 1
+        rows: 1
+        RecycleView:
+            bar_width: self.width / 20
+            bar_height: self.height / 15
+            id: rv_id
+            viewclass: 'RowLayout'
+            size_hint: 1, 0.7
+            SelectableRecycleBoxLayout:
+                default_size: None, dp(75)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
 
 
 <PokemonPage>:
