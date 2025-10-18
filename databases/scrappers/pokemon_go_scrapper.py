@@ -127,17 +127,17 @@ def reformat_data(data: list):
                         }
     if data[5] != 'HP':
         reformatted_data['type_2'] = data[5]
-        reformatted_data['HP'] = data[7]
-        reformatted_data['Attack'] = data[9]
-        reformatted_data['Defence'] = data[11]
-        reformatted_data['Max CP'] = data[13]
+        reformatted_data['HP'] = int(data[7])
+        reformatted_data['Attack'] = int(data[9])
+        reformatted_data['Defence'] = int(data[11])
+        reformatted_data['Max CP'] = int(data[13])
         reformatted_data['moves'] = data[16:]
     else:
         reformatted_data['type_2'] = None
-        reformatted_data['HP'] = data[6]
-        reformatted_data['Attack'] = data[8]
-        reformatted_data['Defence'] = data[10]
-        reformatted_data['Max CP'] = data[12]
+        reformatted_data['HP'] = int(data[6])
+        reformatted_data['Attack'] = int(data[8])
+        reformatted_data['Defence'] = int(data[10])
+        reformatted_data['Max CP'] = int(data[12])
         reformatted_data['moves'] = data[15:]
     return reformatted_data
 
@@ -169,7 +169,7 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
     for pkmn_type in types:
         content.insert(index, str(pkmn_type).split('/')[-2].split('.')[0])
         index += 1
-    if 'Not Currently Available' in content:
+    if 'Not' in content:
         return 'not released'
     for info in content[4: 6]:
         if type(info) == str and len(info) > 10:
@@ -179,6 +179,8 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
         data = reformat_data(content)
         return data
     except IndexError:
+        return 'not released'
+    except ValueError:
         return 'not released'
 
 
@@ -290,4 +292,6 @@ def pokemon_go_scrapper(proceed_screen: Screen):
     from GUI import Pokedex
     proceed_screen.manager.add_widget(Pokedex(game='Pokemon_GO', name='Pokemon GO pokedex'))
     proceed_screen.manager.current = 'Pokemon GO pokedex'
+
+
 
