@@ -1,3 +1,4 @@
+import asyncio
 from os import walk
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
@@ -17,6 +18,7 @@ for path, _, files in walk('./GUI/kv/'):
 
 
 class GPCApp(App):
+    current_app = None
 
     def build(self):
         manager = ScreenManager()
@@ -24,6 +26,10 @@ class GPCApp(App):
         manager.add_widget(GameSelection(name='pokedex game selection'))
         manager.current = 'pokedex game selection'
         return manager
+
+    def run(self):
+        GPCApp.current_app = self
+        super().run()
 
 
 if __name__ == '__main__':

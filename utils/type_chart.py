@@ -106,9 +106,9 @@ def calculate_resists(type_1: str, type_2: str):
     Возвращает словарь. В данный момент не делает различия между одинарными и двойными сопротивлениями и слабостями.
     :return:
     """
-    if len(type_2) == 0:
+    if type_2 not in type_chart:
         type_1 = type_chart[type_1]
-        properties = {'resists': [type_1.resists], 'immunite': [type_1.immunite], 'weaknesses': [type_1.weaknesses]}
+        properties = {'resists': type_1.resists, 'immunite': type_1.immunite, 'weaknesses': type_1.weaknesses}
         return properties
     type_1 = type_chart[type_1]
     type_2 = type_chart[type_2]

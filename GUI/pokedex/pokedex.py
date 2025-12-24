@@ -77,7 +77,10 @@ class RowLayout(BoxLayout, RecycleDataViewBehavior):
         у класса PokedexGrid, дальним потомком которого является конкретный ряд'''
         self.selected = is_selected
         if is_selected:
-            self.parent.parent.parent.parent.open_pokemon_page(self.form.text)
+            grid = self.parent.parent.parent.parent
+            self.selected = False
+            grid.open_pokemon_page(self.form.text)
+
 
 
 class PokedexGrid(GridLayout):
@@ -85,6 +88,7 @@ class PokedexGrid(GridLayout):
     Класс сетки покедекса.
     Получает данные из базы, формирует из них прокручиваемый список с возможностью выбора конкретного элемента по щелчку
     """
+
     def __init__(self, game, incoming_data, **kwargs):
         super().__init__(**kwargs)
         self.game = game

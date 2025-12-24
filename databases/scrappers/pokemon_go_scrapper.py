@@ -1,8 +1,15 @@
 import os
 import re
 import shutil
+import threading
+from threading import Semaphore
+from time import sleep
+
 import requests
+import asyncio
+from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup, NavigableString, Tag
+from kivy.clock import Clock
 from sqlalchemy.orm import sessionmaker
 from kivy.uix.screenmanager import Screen
 
@@ -159,7 +166,7 @@ def get_pokemon_data(pokemon_data: Tag, proceed_screen: Screen):
         form_name = name.text
     name = name.text.rstrip()
     form_name = form_name.rstrip()
-    proceed_screen.current_pokemon = name
+    Clock.schedule_once(lambda dt, name=form_name: update_proceed_screen(proceed_screen, name))
     content = [image, ]
     types = full_data.find_all("img", {"src": re.compile("(type)+")})
     for child in full_data.children:
@@ -279,7 +286,11 @@ def get_full_gen(url: str, proceed_screen: Screen):
         data = get_pokemon_data(pokemon_data, proceed_screen)
         if data == 'not released':
             continue
-        save_data(data)
+        try:
+            save_data(data)
+        except Exception as e:
+            print(e)
+            continue
 
 
 def pokemon_go_scrapper(proceed_screen: Screen):
@@ -287,11 +298,47 @@ def pokemon_go_scrapper(proceed_screen: Screen):
     main scrapper func
     :return: None
     '''
-    for link in _POKEDEX_LINKS:
-        get_full_gen(link, proceed_screen)
-    from GUI import Pokedex
-    proceed_screen.manager.add_widget(Pokedex(game='Pokemon_GO', name='Pokemon GO pokedex'))
-    proceed_screen.manager.current = 'Pokemon GO pokedex'
+    def run_async_parcer():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(async_scrapper(proceed_screen))
+        except Exception as e:
+            # Выводим сообщение об ошибке на место имени покемона
+            proceed_screen.current_pokemon = e
+            print(e)
+            loop.close()
+            update_proceed_screen(proceed_screen, e)
+            # Даём пользователю время прочитать и скопировать ошибку
+            asyncio.sleep(10)
+        finally:
+            loop.close()
+            Clock.schedule_once(lambda dt: switch_to_pokedex())
+
+    def switch_to_pokedex():
+        from GUI import Pokedex
+        proceed_screen.manager.add_widget(Pokedex(game='Pokemon GO', name='Pokemon GO pokedex'))
+        proceed_screen.manager.current = 'Pokemon GO pokedex'
+
+    thread = threading.Thread(target=run_async_parcer, daemon=True)
+    thread.start()
+
+
+async def async_scrapper(proceed_screen):
+    parse_tasks = [asyncio.create_task(get_one_gen(link=link, proceed_screen=proceed_screen)) for link in _POKEDEX_LINKS]
+    await asyncio.gather(*parse_tasks)
+
+
+async def get_one_gen(link, proceed_screen):
+    await sync_to_async(get_full_gen)(link, proceed_screen)
+
+
+def update_proceed_screen(screen, form_name):
+    def update_field():
+        screen.current_pokemon = form_name
+    Clock.schedule_once(lambda dt: update_field())
+    sleep(0.01)
+
 
 
 

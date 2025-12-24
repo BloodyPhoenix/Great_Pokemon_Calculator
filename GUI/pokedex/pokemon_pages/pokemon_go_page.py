@@ -156,7 +156,7 @@ class GoDataGrid(GridLayout):
             rarity=rarity
         )
         self.scroll_box.add_widget(base_data)
-        resists_data = calculate_resists(type_1, type_2.split()[-1])
+        resists_data = calculate_resists(type_1, type_2)
         resists_grid = ResistsGrid(resists_data)
         self.scroll_box.add_widget(resists_grid)
         stats_grid = StatsGrid()
